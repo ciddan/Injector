@@ -1,10 +1,9 @@
 package com.communalizer.inject.kernel;
 
 import org.junit.Test;
-import testclasses.Baz;
+import testclasses.BazImpl;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
 import static org.fest.assertions.Assertions.assertThat;
@@ -72,7 +71,7 @@ public class ResolutionTokenFixture {
         // Arrange
         String expectedKey = "java.util.List<java.lang.String>";
 
-        Constructor constructor = Baz.class.getConstructors()[0];
+        Constructor constructor = BazImpl.class.getConstructors()[0];
         Type t = constructor.getGenericParameterTypes()[0];
 
         // Act

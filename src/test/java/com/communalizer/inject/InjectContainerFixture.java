@@ -4,10 +4,7 @@ import com.communalizer.inject.kernel.Component;
 import com.communalizer.inject.kernel.Factory;
 import com.communalizer.inject.kernel.ResolutionToken;
 import org.junit.Test;
-import testclasses.Bar;
-import testclasses.BarImpl;
-import testclasses.Foo;
-import testclasses.FooImpl;
+import testclasses.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -235,6 +232,63 @@ public class InjectContainerFixture {
 
         assertThat(actual.getFoo()).isNotNull();
         assertThat(actual.getFoo() instanceof FooImpl);
+    }
+
+    @Test
+    public void Resolve_WithMoreThanOneRegisteredComponentOfTheSameRawType_TheCorrectOneIsResolved() {
+        // Arrange
+        List<String> l1 = new ArrayList<String>();
+        List<Integer> l2 = new ArrayList<Integer>();
+
+        Component<List<String>, ArrayList<String>> c1 = new Component<List<String>, ArrayList<String>>(l1) {};
+        Component<List<Integer>, ArrayList<Integer>> c2 = new Component<List<Integer>, ArrayList<Integer>>(l2) {};
+
+        Container container = getNewInjectContainer();
+        container.register(
+            registration()
+                .component(c1)
+                .build(),
+            registration()
+                .component(c2)
+                .build()
+        );
+
+        // Act
+        List actual = container.resolve(new ResolutionToken<List<Integer>>() {});
+
+        // Assert
+        assertThat(actual).isNotNull();
+        assertThat(actual).isSameAs(l2);
+    }
+
+    @Test
+    public void Resolve_ComponentWithGenericConstructorParameterWhenMoreThanOneOfTheSameRawTypeIsRegistered_SelectsTheFullyMatchingDependency() {
+        // Arrange
+        List<String> l1 = new ArrayList<String>();
+        List<Integer> l2 = new ArrayList<Integer>();
+
+        Component<List<String>, ArrayList<String>> c1 = new Component<List<String>, ArrayList<String>>(l1) {};
+        Component<List<Integer>, ArrayList<Integer>> c2 = new Component<List<Integer>, ArrayList<Integer>>(l2) {};
+        Component<Baz, BazImpl> c3 = new Component<Baz, BazImpl>() {};
+
+        Container container = getNewInjectContainer();
+        container.register(
+            registration()
+                .component(c1)
+                .build(),
+            registration()
+                .component(c2)
+                .build(),
+            registration()
+                .component(c3)
+                .build()
+        );
+
+        // Act
+        Baz baz = container.resolve(new ResolutionToken<Baz>() {});
+
+        // Assert
+        assertThat(baz.getStrings()).isSameAs(l1);
     }
 
     private static Container getNewInjectContainer() {

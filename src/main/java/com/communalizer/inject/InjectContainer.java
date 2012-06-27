@@ -61,10 +61,13 @@ public class InjectContainer implements Container {
     }
 
     @SuppressWarnings("unchecked")
+    /**
+     * Attempts to create an instance of the requested {@link Registration} by reflection.
+     */
     private <T> T reflectInstance(Registration registration) {
+        Class<T> clazz;
         Type referencedType = registration.getComponent().getReferencedType();
 
-        Class<T> clazz;
         if (referencedType instanceof ParameterizedType) {
             clazz = ((Class<T>) ((ParameterizedType) referencedType).getRawType());
         } else {
@@ -79,9 +82,7 @@ public class InjectContainer implements Container {
                 Object[] initArgs = new Object[dependencies.length];
 
                 for (int i = 0; i < dependencies.length; i++) {
-                    Class<?> dependency = (Class) dependencies[i];
-
-                    ResolutionToken token = ResolutionToken.getToken(dependency);
+                    ResolutionToken token = ResolutionToken.getToken(dependencies[i]);
                     initArgs[i] = resolve(token);
                 }
 
@@ -95,6 +96,9 @@ public class InjectContainer implements Container {
     }
 
     @SuppressWarnings("unchecked")
+    /**
+     * Evaluates all available constructors and selects the largest satisfiable constructor
+     */
     private <T> Constructor<T> selectGreediestMatchingConstructor(Class<T> type) {
         Enumerable<Constructor<T>> constructors =
                 Enumerable.create((Constructor<T>[]) type.getConstructors())
@@ -115,11 +119,22 @@ public class InjectContainer implements Container {
         return null;
     }
 
+    /**
+     * Evaluates a {@link Constructor} to see whether or not all necessary dependencies are registered with the
+     * container.
+     * @param constructor           The {@link Constructor} to inspect.
+     * @param <T>                   Type of the {@link Constructor}.
+     * @return                      A boolean indicating whether all dependencies can be satisfied.
+     */
     private <T> boolean isSatisfiable(Constructor<T> constructor) {
-        Class<?>[] dependencies = constructor.getParameterTypes();
+        Type[] dependencies = constructor.getGenericParameterTypes();
 
-        for (Class<?> dependency : dependencies) {
-            if (!registry.containsKey(dependency.getName())) return false;
+        for (Type dependency : dependencies) {
+            ResolutionToken token = ResolutionToken.getToken(dependency);
+
+            if (!registry.containsKey(token.getKey())) {
+                return false;
+            }
         }
 
         return true;
