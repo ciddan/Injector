@@ -37,6 +37,10 @@ public abstract class ResolutionToken<T> {
         return new ResolutionToken<T>(type) {};
     }
 
+    public static ResolutionToken getToken(Type type) {
+        return new ResolutionToken(type) {};
+    }
+
     public String getKey() {
         String typeName = this.type.toString().replace("class ", "").replace("interface ", "");
 
