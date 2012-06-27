@@ -4,6 +4,10 @@ import com.communalizer.inject.kernel.Component;
 import com.communalizer.inject.kernel.Factory;
 import com.communalizer.inject.kernel.ResolutionToken;
 import org.junit.Test;
+import testclasses.Bar;
+import testclasses.BarImpl;
+import testclasses.Foo;
+import testclasses.FooImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +19,7 @@ public class InjectContainerFixture {
     @Test
     public void Register_Component_AddsItToRegistry() {
         // Arrange
-        Container container = new InjectContainer();
+        Container container = getNewInjectContainer();
 
         // Act
         container.register(
@@ -33,7 +37,7 @@ public class InjectContainerFixture {
     public void Register_Component_AddsItToRegistryWithExpectedKey() {
         // Arrange
         String expectedKey = "java.util.List<java.lang.String>";
-        Container container = new InjectContainer();
+        Container container = getNewInjectContainer();
 
         // Act
         container.register(
@@ -50,7 +54,7 @@ public class InjectContainerFixture {
     public void Register_NamedComponent_AddsItToRegistryWithExpectedKey() {
         // Arrange
         String expectedKey = "java.util.List<java.lang.String>-Foo";
-        Container container = new InjectContainer();
+        Container container = getNewInjectContainer();
 
         // Act
         container.register(
@@ -68,7 +72,7 @@ public class InjectContainerFixture {
     @Test(expected = RuntimeException.class)
     public void Register_MultipleComponentsOfSameBaseTypeWithoutNames_Throws() {
         // Arrange
-        Container container = new InjectContainer();
+        Container container = getNewInjectContainer();
 
         // Act
         container.register(
@@ -84,7 +88,7 @@ public class InjectContainerFixture {
     @Test
     public void Register_MultipleComponentsOfSameBaseTypeWithDifferingNames_RetainsBothInRegistry() {
         // Arrange
-        Container container = new InjectContainer();
+        Container container = getNewInjectContainer();
 
         // Act
         container.register(
@@ -105,7 +109,7 @@ public class InjectContainerFixture {
     @Test(expected = IllegalArgumentException.class)
     public void Resolve_WithNullResolutionToken_Throws() {
         // Arrange
-        Container container = new InjectContainer();
+        Container container = getNewInjectContainer();
 
         // Act
         container.resolve(null);
@@ -114,7 +118,7 @@ public class InjectContainerFixture {
     @Test(expected = RuntimeException.class)
     public void Resolve_TypeThatIsNotRegistered_Throws() {
         // Arrange
-        Container container = new InjectContainer();
+        Container container = getNewInjectContainer();
 
         // Act
         container.resolve(new ResolutionToken<List<String>>() {});
@@ -126,7 +130,7 @@ public class InjectContainerFixture {
         List<String> instance = new ArrayList<String>();
         Component<List<String>, ArrayList<String>> component = new Component<List<String>, ArrayList<String>>() {};
 
-        Container container = new InjectContainer();
+        Container container = getNewInjectContainer();
         container.register(
             registration()
                 .component(component)
@@ -154,7 +158,7 @@ public class InjectContainerFixture {
 
         Component<List<String>, ArrayList<String>> component = new Component<List<String>, ArrayList<String>>() {};
 
-        Container container = new InjectContainer();
+        Container container = getNewInjectContainer();
         container.register(
             registration()
                 .component(component)
@@ -176,7 +180,7 @@ public class InjectContainerFixture {
     @Test
     public void Resolve_PlainTypeWithNoDependenciesThroughReflection_ReturnsNewInstance() {
         // Arrange
-        Container container = new InjectContainer();
+        Container container = getNewInjectContainer();
         container.register(
             registration()
                 .component(new Component<Object, String>() {})
@@ -194,7 +198,7 @@ public class InjectContainerFixture {
     @Test
     public void Resolve_GenericTypeWithNoDependenciesThroughReflection_ReturnsNewInstance() {
         // Arrange
-        Container container = new InjectContainer();
+        Container container = getNewInjectContainer();
         container.register(
             registration()
                 .component(new Component<List<String>, ArrayList<String>>() {})
@@ -207,5 +211,33 @@ public class InjectContainerFixture {
         // Assert
         assertThat(actual).isNotNull();
         assertThat(actual instanceof ArrayList);
+    }
+
+    @Test
+    public void Resolve_PlainTypeWithRegisteredDependency_CreatesANewInstanceAndInjectsTheDependency() {
+        // Arrange
+        Container container = getNewInjectContainer();
+        container.register(
+            registration()
+                .component(new Component<Bar, BarImpl>() {})
+                .build(),
+            registration()
+                .component(new Component<Foo, FooImpl>() {})
+                .build()
+        );
+
+        // Act
+        Bar actual = container.resolve(new ResolutionToken<Bar>() {});
+
+        // Assert
+        assertThat(actual).isNotNull();
+        assertThat(actual instanceof BarImpl);
+
+        assertThat(actual.getFoo()).isNotNull();
+        assertThat(actual.getFoo() instanceof FooImpl);
+    }
+
+    private static Container getNewInjectContainer() {
+        return new InjectContainer();
     }
 }

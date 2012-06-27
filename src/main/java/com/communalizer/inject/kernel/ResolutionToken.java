@@ -9,12 +9,17 @@ public abstract class ResolutionToken<T> {
     private final String name;
 
     public ResolutionToken() {
-        this(null);
+        this("");
     }
 
     public ResolutionToken(String name) {
         this.type = extractType(0);
         this.name = name;
+    }
+
+    private ResolutionToken(Type type) {
+        this.name = null;
+        this.type = type;
     }
 
     private Type extractType(int pos) {
@@ -26,6 +31,10 @@ public abstract class ResolutionToken<T> {
         ParameterizedType pt = (ParameterizedType) t;
 
         return pt.getActualTypeArguments()[pos];
+    }
+
+    public static <T> ResolutionToken<T> getToken(Class<T> type) {
+        return new ResolutionToken<T>(type) {};
     }
 
     public String getKey() {

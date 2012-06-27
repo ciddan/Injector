@@ -1,9 +1,11 @@
 package com.communalizer.inject;
 
-import com.communalizer.inject.kernel.Component;
 import com.communalizer.inject.kernel.Registration;
 import com.communalizer.inject.kernel.ResolutionToken;
+import org.core4j.Enumerable;
+import org.core4j.Func1;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.HashMap;
@@ -62,20 +64,65 @@ public class InjectContainer implements Container {
     private <T> T reflectInstance(Registration registration) {
         Type referencedType = registration.getComponent().getReferencedType();
 
-        Class clazz;
+        Class<T> clazz;
         if (referencedType instanceof ParameterizedType) {
-            clazz = ((Class) ((ParameterizedType) referencedType).getRawType());
+            clazz = ((Class<T>) ((ParameterizedType) referencedType).getRawType());
         } else {
-            clazz = (Class) referencedType;
+            clazz =  (Class<T>) referencedType;
         }
 
         try {
-            return (T) clazz.newInstance();
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
+            Constructor<T> constructor = selectGreediestMatchingConstructor(clazz);
+            Type[] dependencies = constructor.getGenericParameterTypes();
+
+            if (dependencies != null && dependencies.length > 0) {
+                Object[] initArgs = new Object[dependencies.length];
+
+                for (int i = 0; i < dependencies.length; i++) {
+                    Class<?> dependency = (Class) dependencies[i];
+
+                    ResolutionToken token = ResolutionToken.getToken(dependency);
+                    initArgs[i] = resolve(token);
+                }
+
+                return constructor.newInstance(initArgs);
+            }
+
+            return constructor.newInstance();
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Constructor<T> selectGreediestMatchingConstructor(Class<T> type) {
+        Enumerable<Constructor<T>> constructors =
+                Enumerable.create((Constructor<T>[]) type.getConstructors())
+                        .orderBy(new Func1<Constructor<T>, Comparable>() {
+                            @Override
+                            public Comparable apply(Constructor<T> tConstructor) {
+                                return tConstructor.getTypeParameters().length;
+                            }
+                        })
+                        .reverse();
+
+        for (Constructor<T> constructor : constructors) {
+            if (isSatisfiable(constructor)) {
+                return constructor;
+            }
+        }
+
+        return null;
+    }
+
+    private <T> boolean isSatisfiable(Constructor<T> constructor) {
+        Class<?>[] dependencies = constructor.getParameterTypes();
+
+        for (Class<?> dependency : dependencies) {
+            if (!registry.containsKey(dependency.getName())) return false;
+        }
+
+        return true;
     }
 
     @Override

@@ -6,4 +6,9 @@ public class BarImpl implements Bar {
     public BarImpl(Foo foo) {
         this.foo = foo;
     }
+
+    @Override
+    public Foo getFoo() {
+        return foo;
+    }
 }
