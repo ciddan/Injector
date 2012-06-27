@@ -1,6 +1,7 @@
 package com.communalizer.inject;
 
 import com.communalizer.inject.kernel.Registration;
+import com.communalizer.inject.kernel.RegistrationBuilder;
 import com.communalizer.inject.kernel.ResolutionToken;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
@@ -33,6 +34,18 @@ public class InjectContainer implements Container {
     public void register(Registration... registrations) {
         for (Registration registration : registrations) {
             register(registration);
+        }
+    }
+
+    @Override
+    public void register(RegistrationBuilder builder) {
+        register(builder.build());
+    }
+
+    @Override
+    public void register(RegistrationBuilder... builders) {
+        for (RegistrationBuilder builder : builders) {
+            register(builder);
         }
     }
 

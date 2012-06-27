@@ -175,6 +175,29 @@ public class InjectContainerFixture {
     }
 
     @Test
+    public void Resolve_UsingNamedToken_ReturnsExplicitRegisteredInstance() {
+        // Arrange
+        Component<Object, String> c1 = new Component<Object, String>() {};
+        Component<Object, Integer> c2 = new Component<Object, Integer>() {};
+
+        Container container = getNewInjectContainer();
+        container.register(
+            registration()
+                .component(c1)
+                .named("foo"),
+            registration()
+                .component(c2)
+        );
+
+        // Act
+        Object actual = container.resolve(new ResolutionToken<Object>("foo") {});
+
+        // Assert
+        assertThat(actual).isNotNull();
+        assertThat(actual instanceof String);
+    }
+
+    @Test
     public void Resolve_PlainTypeWithNoDependenciesThroughReflection_ReturnsNewInstance() {
         // Arrange
         Container container = getNewInjectContainer();
