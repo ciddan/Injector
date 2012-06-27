@@ -10,7 +10,7 @@ public class Baz {
     }
 
 
-    public Baz(String s, List<String> sl, Integer i) {
+    public Baz(List<String> sl) {
         this.strings = sl;
     }
 }
