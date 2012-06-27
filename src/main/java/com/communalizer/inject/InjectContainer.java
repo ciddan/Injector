@@ -1,8 +1,11 @@
 package com.communalizer.inject;
 
+import com.communalizer.inject.kernel.Component;
 import com.communalizer.inject.kernel.Registration;
 import com.communalizer.inject.kernel.ResolutionToken;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,7 +47,7 @@ public class InjectContainer implements Container {
 
         switch (registration.getComponent().getComponentType()) {
             case REFLECTION:
-                return null;
+                return reflectInstance(registration);
 
             default:
                 @SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
@@ -53,6 +56,26 @@ public class InjectContainer implements Container {
                 return instance;
         }
 
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> T reflectInstance(Registration registration) {
+        Type referencedType = registration.getComponent().getReferencedType();
+
+        Class clazz;
+        if (referencedType instanceof ParameterizedType) {
+            clazz = ((Class) ((ParameterizedType) referencedType).getRawType());
+        } else {
+            clazz = (Class) referencedType;
+        }
+
+        try {
+            return (T) clazz.newInstance();
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

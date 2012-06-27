@@ -172,9 +172,27 @@ public class InjectContainerFixture {
 
         assertThat(actual1).isNotSameAs(actual2);
     }
-    
+
     @Test
-    public void Resolve_TypeWithNoDependenciesThroughReflection_ReturnsNewInstance() {
+    public void Resolve_PlainTypeWithNoDependenciesThroughReflection_ReturnsNewInstance() {
+        // Arrange
+        Container container = new InjectContainer();
+        container.register(
+            registration()
+                .component(new Component<Object, String>() {})
+                .build()
+        );
+
+        // Act
+        Object actual = container.resolve(new ResolutionToken<Object>() {});
+
+        // Assert
+        assertThat(actual).isNotNull();
+        assertThat(actual instanceof String);
+    }
+
+    @Test
+    public void Resolve_GenericTypeWithNoDependenciesThroughReflection_ReturnsNewInstance() {
         // Arrange
         Container container = new InjectContainer();
         container.register(
