@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RegistrationBuilder {
-    private List<ExplicitDependency> dependencies = new ArrayList<ExplicitDependency>();
+    private List<ParameterDependency> dependencies = new ArrayList<ParameterDependency>();
     private Component component;
     private Factory factory;
     private Object instance;
@@ -46,7 +46,7 @@ public class RegistrationBuilder {
         registration.setFactory(factory);
         registration.setInstance(instance);
 
-        for (ExplicitDependency dependency : dependencies) {
+        for (ParameterDependency dependency : dependencies) {
             registration.addDependency(dependency);
         }
 
@@ -54,19 +54,19 @@ public class RegistrationBuilder {
     }
 
     public <T> RegistrationBuilder dependsOn(String parameterName, T value) {
-        this.dependencies.add(new ExplicitDependency<T>(parameterName, value));
+        this.dependencies.add(new ParameterDependency<T>(parameterName, value));
 
         return this;
     }
 
     public <T> RegistrationBuilder dependsOn(String parameterName, Factory<T> factory) {
-        this.dependencies.add(new ExplicitDependency<T>(parameterName, factory));
+        this.dependencies.add(new ParameterDependency<T>(parameterName, factory));
 
         return this;
     }
 
     public <T> RegistrationBuilder dependsOn(String parameterName, ResolutionToken<T> token) {
-        this.dependencies.add(new ExplicitDependency<T>(parameterName, token));
+        this.dependencies.add(new ParameterDependency<T>(parameterName, token));
 
         return this;
     }

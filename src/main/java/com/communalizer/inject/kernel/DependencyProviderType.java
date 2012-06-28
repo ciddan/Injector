@@ -1,6 +1,6 @@
 package com.communalizer.inject.kernel;
 
-public enum ExplicitDependencyType {
+public enum DependencyProviderType {
     FACTORY,
     INSTANCE,
     RESOLUTION_TOKEN

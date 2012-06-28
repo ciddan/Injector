@@ -1,6 +1,6 @@
 package com.communalizer.inject;
 
-import com.communalizer.inject.kernel.ExplicitDependency;
+import com.communalizer.inject.kernel.ParameterDependency;
 import com.communalizer.inject.kernel.Registration;
 import com.communalizer.inject.kernel.RegistrationBuilder;
 import com.communalizer.inject.kernel.ResolutionToken;
@@ -101,7 +101,7 @@ public class InjectContainer implements Container {
                 for (int i = 0; i < dependencies.length; i++) {
                     if (registration.hasExplicitDependencies()) {
                         String parameterName = paranamer.lookupParameterNames(constructor)[i];
-                        ExplicitDependency dep = registration.getDependency(parameterName);
+                        ParameterDependency dep = registration.getDependency(parameterName);
 
                         if (dep != null) {
                             switch (dep.getProviderType()) {
@@ -110,7 +110,7 @@ public class InjectContainer implements Container {
                                 break;
 
                                 case FACTORY:
-                                    initArgs[i] = dep.getFactoryArtefact();
+                                    initArgs[i] = dep.getFactoryArtifact();
                                 break;
 
                                 case RESOLUTION_TOKEN:

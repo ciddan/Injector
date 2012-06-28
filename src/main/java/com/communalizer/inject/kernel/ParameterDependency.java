@@ -1,7 +1,7 @@
 package com.communalizer.inject.kernel;
 
 
-public class ExplicitDependency<T> {
+public class ParameterDependency<T> {
     private final String propertyName;
 
     private T instance;
@@ -12,21 +12,21 @@ public class ExplicitDependency<T> {
         return propertyName;
     }
 
-    public ExplicitDependency(String propertyName, T dependency) {
+    public ParameterDependency(String propertyName, T dependency) {
         verifyPropertyName(propertyName);
 
         this.propertyName = propertyName;
         this.instance = dependency;
     }
 
-    public ExplicitDependency(String parameterName, Factory<T> factory) {
+    public ParameterDependency(String parameterName, Factory<T> factory) {
         verifyPropertyName(parameterName);
 
         this.propertyName = parameterName;
         this.factory = factory;
     }
 
-    public ExplicitDependency(String parameterName, ResolutionToken<T> token) {
+    public ParameterDependency(String parameterName, ResolutionToken<T> token) {
         verifyPropertyName(parameterName);
 
         this.propertyName = parameterName;
@@ -43,7 +43,7 @@ public class ExplicitDependency<T> {
         return instance;
     }
 
-    public T getFactoryArtefact() {
+    public T getFactoryArtifact() {
         return factory.create();
     }
 
@@ -51,15 +51,15 @@ public class ExplicitDependency<T> {
         return token;
     }
 
-    public ExplicitDependencyType getProviderType() {
+    public DependencyProviderType getProviderType() {
         if (instance != null) {
-            return ExplicitDependencyType.INSTANCE;
+            return DependencyProviderType.INSTANCE;
         }
 
         if (factory != null) {
-            return ExplicitDependencyType.FACTORY;
+            return DependencyProviderType.FACTORY;
         }
 
-        return ExplicitDependencyType.RESOLUTION_TOKEN;
+        return DependencyProviderType.RESOLUTION_TOKEN;
     }
 }
