@@ -1,9 +1,6 @@
 package com.communalizer.inject;
 
-import com.communalizer.inject.kernel.ParameterDependency;
-import com.communalizer.inject.kernel.Registration;
-import com.communalizer.inject.kernel.RegistrationBuilder;
-import com.communalizer.inject.kernel.ResolutionToken;
+import com.communalizer.inject.kernel.*;
 import com.thoughtworks.paranamer.BytecodeReadingParanamer;
 import com.thoughtworks.paranamer.Paranamer;
 import org.core4j.Enumerable;
@@ -101,7 +98,7 @@ public class InjectContainer implements Container {
                 for (int i = 0; i < dependencies.length; i++) {
                     if (registration.hasExplicitDependencies()) {
                         String parameterName = paranamer.lookupParameterNames(constructor)[i];
-                        ParameterDependency dep = registration.getDependency(parameterName);
+                        ExplicitDependency dep = registration.getDependency(parameterName);
 
                         if (dep != null) {
                             switch (dep.getProviderType()) {

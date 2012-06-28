@@ -1,14 +1,14 @@
 package com.communalizer.inject.kernel;
 
 
-public class ParameterDependency<T> {
+public class ParameterDependency<T> implements ExplicitDependency<T> {
     private final String propertyName;
 
     private T instance;
     private Factory<T> factory;
     private ResolutionToken<T> token;
 
-    public String getParameterName() {
+    public String getIdentifier() {
         return propertyName;
     }
 
@@ -39,18 +39,22 @@ public class ParameterDependency<T> {
         }
     }
 
+    @Override
     public T getInstance() {
         return instance;
     }
 
+    @Override
     public T getFactoryArtifact() {
         return factory.create();
     }
 
+    @Override
     public ResolutionToken<T> getResolutionToken() {
         return token;
     }
 
+    @Override
     public DependencyProviderType getProviderType() {
         if (instance != null) {
             return DependencyProviderType.INSTANCE;

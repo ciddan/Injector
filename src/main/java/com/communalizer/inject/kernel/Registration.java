@@ -6,7 +6,7 @@ import java.util.Map;
 public class Registration<TBase, TImpl> {
     private Component<TBase, TImpl> component;
     private String name;
-    private final Map<String, ParameterDependency> dependencies = new HashMap<String, ParameterDependency>();
+    private final Map<String, ExplicitDependency> dependencies = new HashMap<String, ExplicitDependency>();
 
     public String getName() {
         return name;
@@ -54,16 +54,16 @@ public class Registration<TBase, TImpl> {
         }
     }
 
-    public <T> void addDependency(ParameterDependency<T> dependency) {
-        this.dependencies.put(dependency.getParameterName(), dependency);
+    public <T> void addDependency(ExplicitDependency<T> dependency) {
+        this.dependencies.put(dependency.getIdentifier(), dependency);
     }
 
     @SuppressWarnings("unchecked")
-    public ParameterDependency getDependency(String key) {
+    public ExplicitDependency getDependency(String key) {
         return this.dependencies.get(key);
     }
 
-    public Map<String, ParameterDependency> getDependencies() {
+    public Map<String, ExplicitDependency> getDependencies() {
         return this.dependencies;
     }
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RegistrationBuilder {
-    private List<ParameterDependency> dependencies = new ArrayList<ParameterDependency>();
+    private List<ExplicitDependency> dependencies = new ArrayList<ExplicitDependency>();
     private Component component;
     private Factory factory;
     private Object instance;
@@ -46,7 +46,7 @@ public class RegistrationBuilder {
         registration.setFactory(factory);
         registration.setInstance(instance);
 
-        for (ParameterDependency dependency : dependencies) {
+        for (ExplicitDependency dependency : dependencies) {
             registration.addDependency(dependency);
         }
 

@@ -118,7 +118,7 @@ public class RegistrationBuilderFixture {
                 .build();
 
         // Assert
-        ParameterDependency dep = reg.getDependency("parameterName");
+        ExplicitDependency dep = reg.getDependency("parameterName");
 
         assertThat(dep).isNotNull();
         assertThat(dep.getInstance()).isEqualTo("value");
