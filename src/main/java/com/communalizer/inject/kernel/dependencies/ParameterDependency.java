@@ -1,12 +1,11 @@
-package com.communalizer.inject.kernel;
+package com.communalizer.inject.kernel.dependencies;
 
 
-public class ParameterDependency<T> implements ExplicitDependency<T> {
+import com.communalizer.inject.kernel.Factory;
+import com.communalizer.inject.kernel.ResolutionToken;
+
+public class ParameterDependency<T> extends AbstractDependency<T> {
     private final String propertyName;
-
-    private T instance;
-    private Factory<T> factory;
-    private ResolutionToken<T> token;
 
     public String getIdentifier() {
         return propertyName;
@@ -30,40 +29,12 @@ public class ParameterDependency<T> implements ExplicitDependency<T> {
         verifyPropertyName(parameterName);
 
         this.propertyName = parameterName;
-        this.token = token;
+        this.resolutionToken = token;
     }
 
     private void verifyPropertyName(String parameterName) {
         if (parameterName == null) {
             throw new IllegalArgumentException("Parameter: parameterName cannot be null.");
         }
-    }
-
-    @Override
-    public T getInstance() {
-        return instance;
-    }
-
-    @Override
-    public T getFactoryArtifact() {
-        return factory.create();
-    }
-
-    @Override
-    public ResolutionToken<T> getResolutionToken() {
-        return token;
-    }
-
-    @Override
-    public DependencyProviderType getProviderType() {
-        if (instance != null) {
-            return DependencyProviderType.INSTANCE;
-        }
-
-        if (factory != null) {
-            return DependencyProviderType.FACTORY;
-        }
-
-        return DependencyProviderType.RESOLUTION_TOKEN;
     }
 }

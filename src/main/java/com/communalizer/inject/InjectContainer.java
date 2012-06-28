@@ -1,6 +1,7 @@
 package com.communalizer.inject;
 
 import com.communalizer.inject.kernel.*;
+import com.communalizer.inject.kernel.dependencies.ExplicitDependency;
 import com.thoughtworks.paranamer.BytecodeReadingParanamer;
 import com.thoughtworks.paranamer.Paranamer;
 import org.core4j.Enumerable;

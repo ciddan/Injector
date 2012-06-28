@@ -1,5 +1,6 @@
 package com.communalizer.inject.kernel;
 
+import com.communalizer.inject.kernel.dependencies.ExplicitDependency;
 import org.junit.Test;
 
 import java.util.ArrayList;

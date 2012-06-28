@@ -1,5 +1,7 @@
 package com.communalizer.inject.kernel;
 
+import com.communalizer.inject.kernel.dependencies.DependencyProviderType;
+import com.communalizer.inject.kernel.dependencies.ParameterDependency;
 import org.junit.Test;
 
 import static org.fest.assertions.Assertions.assertThat;

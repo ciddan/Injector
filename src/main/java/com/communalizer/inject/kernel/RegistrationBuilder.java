@@ -1,5 +1,8 @@
 package com.communalizer.inject.kernel;
 
+import com.communalizer.inject.kernel.dependencies.ExplicitDependency;
+import com.communalizer.inject.kernel.dependencies.ParameterDependency;
+
 import java.util.ArrayList;
 import java.util.List;
 

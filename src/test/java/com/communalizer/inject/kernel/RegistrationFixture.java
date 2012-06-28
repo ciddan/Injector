@@ -1,5 +1,6 @@
 package com.communalizer.inject.kernel;
 
+import com.communalizer.inject.kernel.dependencies.ParameterDependency;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -137,7 +138,7 @@ public class RegistrationFixture {
     }
 
     @Test
-    public void Registration_CanAddExplicitDependencyToInternalCache_AndRetrieveItByName() {
+    public void Registration_CanAddParameterDependencyToInternalCache_AndRetrieveItByName() {
         // Arrange
         Component<List<Object>, ArrayList<String>> component = new Component<List<Object>, ArrayList<String>>() {};
         Registration<List<Object>, ArrayList<String>> registration = new Registration<List<Object>, ArrayList<String>>(component);

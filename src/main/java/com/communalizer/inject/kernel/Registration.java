@@ -1,5 +1,7 @@
 package com.communalizer.inject.kernel;
 
+import com.communalizer.inject.kernel.dependencies.ExplicitDependency;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,10 +63,6 @@ public class Registration<TBase, TImpl> {
     @SuppressWarnings("unchecked")
     public ExplicitDependency getDependency(String key) {
         return this.dependencies.get(key);
-    }
-
-    public Map<String, ExplicitDependency> getDependencies() {
-        return this.dependencies;
     }
 
     public boolean hasExplicitDependencies() {
