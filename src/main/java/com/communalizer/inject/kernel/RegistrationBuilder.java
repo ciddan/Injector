@@ -1,6 +1,10 @@
 package com.communalizer.inject.kernel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RegistrationBuilder {
+    private List<ExplicitDependency> dependencies = new ArrayList<ExplicitDependency>();
     private Component component;
     private Factory factory;
     private Object instance;
@@ -42,6 +46,28 @@ public class RegistrationBuilder {
         registration.setFactory(factory);
         registration.setInstance(instance);
 
+        for (ExplicitDependency dependency : dependencies) {
+            registration.addDependency(dependency);
+        }
+
         return registration;
+    }
+
+    public <T> RegistrationBuilder dependsOn(String parameterName, T value) {
+        this.dependencies.add(new ExplicitDependency<T>(parameterName, value));
+
+        return this;
+    }
+
+    public <T> RegistrationBuilder dependsOn(String parameterName, Factory<T> factory) {
+        this.dependencies.add(new ExplicitDependency<T>(parameterName, factory));
+
+        return this;
+    }
+
+    public <T> RegistrationBuilder dependsOn(String parameterName, ResolutionToken<T> token) {
+        this.dependencies.add(new ExplicitDependency<T>(parameterName, token));
+
+        return this;
     }
 }

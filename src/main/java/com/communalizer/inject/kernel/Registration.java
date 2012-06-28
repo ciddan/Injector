@@ -1,8 +1,12 @@
 package com.communalizer.inject.kernel;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Registration<TBase, TImpl> {
     private Component<TBase, TImpl> component;
     private String name;
+    private final Map<String, ExplicitDependency> dependencies = new HashMap<String, ExplicitDependency>();
 
     public String getName() {
         return name;
@@ -48,5 +52,22 @@ public class Registration<TBase, TImpl> {
         } else {
             return String.format("%s-%s", component.generateKey(), this.name);
         }
+    }
+
+    public <T> void addDependency(ExplicitDependency<T> dependency) {
+        this.dependencies.put(dependency.getParameterName(), dependency);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ExplicitDependency getDependency(String key) {
+        return this.dependencies.get(key);
+    }
+
+    public Map<String, ExplicitDependency> getDependencies() {
+        return this.dependencies;
+    }
+
+    public boolean hasExplicitDependencies() {
+        return this.dependencies.size() >= 1;
     }
 }

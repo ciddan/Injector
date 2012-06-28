@@ -8,7 +8,7 @@ public class ExplicitDependency<T> {
     private Factory<T> factory;
     private ResolutionToken<T> token;
 
-    public String getPropertyName() {
+    public String getParameterName() {
         return propertyName;
     }
 
@@ -19,23 +19,23 @@ public class ExplicitDependency<T> {
         this.instance = dependency;
     }
 
-    public ExplicitDependency(String propertyName, Factory<T> factory) {
-        verifyPropertyName(propertyName);
+    public ExplicitDependency(String parameterName, Factory<T> factory) {
+        verifyPropertyName(parameterName);
 
-        this.propertyName = propertyName;
+        this.propertyName = parameterName;
         this.factory = factory;
     }
 
-    public ExplicitDependency(String propertyName, ResolutionToken<T> token) {
-        verifyPropertyName(propertyName);
+    public ExplicitDependency(String parameterName, ResolutionToken<T> token) {
+        verifyPropertyName(parameterName);
 
-        this.propertyName = propertyName;
+        this.propertyName = parameterName;
         this.token = token;
     }
 
-    private void verifyPropertyName(String propertyName) {
-        if (propertyName == null) {
-            throw new IllegalArgumentException("Parameter: propertyName cannot be null.");
+    private void verifyPropertyName(String parameterName) {
+        if (parameterName == null) {
+            throw new IllegalArgumentException("Parameter: parameterName cannot be null.");
         }
     }
 

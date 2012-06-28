@@ -136,6 +136,23 @@ public class RegistrationFixture {
         assertThat(actual).isEqualTo(expectedKey);
     }
 
+    @Test
+    public void Registration_CanAddExplicitDependencyToInternalCache_AndRetrieveItByName() {
+        // Arrange
+        Component<List<Object>, ArrayList<String>> component = new Component<List<Object>, ArrayList<String>>() {};
+        Registration<List<Object>, ArrayList<String>> registration = new Registration<List<Object>, ArrayList<String>>(component);
+
+        final String anyExplicitValue = "AnyExplicitValue";
+        final ExplicitDependency<String> explicitDependency = new ExplicitDependency<String>("AnyPropertyName", anyExplicitValue);
+
+        // Act
+        registration.addDependency(explicitDependency);
+
+        // Assert
+        assertThat(registration.getDependency("AnyPropertyName")).isNotNull();
+        assertThat(registration.getDependency("AnyPropertyName")).isSameAs(explicitDependency);
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void Registration_WithIncompatibleComponentFactoryRawTypes_Throws() {
         // Arrange

@@ -104,4 +104,23 @@ public class RegistrationBuilderFixture {
         // Assert
         assertThat(actual).isEqualTo(anyName);
     }
+
+    @Test
+    public void RegistrationBuilder_CanAddExplicitDependency_AndThenRetrieveItFromTheBuiltRegistration() {
+        // Arrange
+        Component<Object, String> component = new Component<Object, String>() {};
+
+        // Act
+        Registration reg =
+            registration()
+                .component(component)
+                .dependsOn("parameterName", "value")
+                .build();
+
+        // Assert
+        ExplicitDependency dep = reg.getDependency("parameterName");
+
+        assertThat(dep).isNotNull();
+        assertThat(dep.getInstance()).isEqualTo("value");
+    }
 }

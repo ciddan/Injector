@@ -314,6 +314,95 @@ public class InjectContainerFixture {
         assertThat(baz.getStrings()).isSameAs(l1);
     }
 
+    @Test
+    public void Resolve_ComponentWithExplicitDependencyInstance_GetsThatExplicitInstanceInjectedForTheCorrectParameter() {
+        // Arrange
+        Container container = getNewInjectContainer();
+        Foo instance = new FooImpl();
+        Component<Foo, FooImpl> fc = new Component<Foo, FooImpl>() {};
+        Component<Quux, QuuxImpl> qc = new Component<Quux, QuuxImpl>() {};
+
+        container.register(
+            registration()
+                .component(fc),
+            registration()
+                .component(qc)
+                .dependsOn("foo1", instance)
+        );
+
+        // Act
+        Quux actual = container.resolve(new ResolutionToken<Quux>() {});
+
+        // Assert
+        assertThat(actual).isNotNull();
+        assertThat(actual.getFoo1()).isSameAs(instance);
+        assertThat(actual.getFoo2()).isNotSameAs(instance);
+    }
+
+    @Test
+    public void Resolve_ComponentWithExplicitDependencyFactory_GetsThatExplicitInstanceInjectedForTheCorrectParameter() {
+        // Arrange
+        Container container = getNewInjectContainer();
+        final Foo instance = new FooImpl();
+
+        Component<Foo, FooImpl> fc = new Component<Foo, FooImpl>() {};
+        Component<Quux, QuuxImpl> qc = new Component<Quux, QuuxImpl>() {};
+
+        Factory<Foo> fooFactory = new Factory<Foo>() {
+            @Override
+            public Foo create() {
+                return instance;
+            }
+        };
+
+        container.register(
+            registration()
+                .component(fc),
+            registration()
+                .component(qc)
+                .dependsOn("foo1", fooFactory)
+        );
+
+        // Act
+        Quux actual = container.resolve(new ResolutionToken<Quux>() {});
+
+        // Assert
+        assertThat(actual).isNotNull();
+        assertThat(actual.getFoo1()).isSameAs(instance);
+        assertThat(actual.getFoo2()).isNotSameAs(instance);
+    }
+
+    @Test
+    public void Resolve_ComponentWithExplicitDependencyResolutionToken_GetsThatExplicitInstanceInjectedForTheCorrectParameter() {
+        // Arrange
+        Container container = getNewInjectContainer();
+        final Foo instance = new FooImpl();
+
+        Component<Foo, FooImpl> fc = new Component<Foo, FooImpl>() {};
+        Component<Foo, FooImpl> fc2 = new Component<Foo, FooImpl>() {};
+        Component<Quux, QuuxImpl> qc = new Component<Quux, QuuxImpl>() {};
+
+        container.register(
+            registration()
+                .component(fc),
+            registration()
+                .component(fc2)
+                .instance(instance)
+                .named("foo"),
+            registration()
+                .component(qc)
+                .dependsOn("foo1", new ResolutionToken<Foo>("foo") {})
+        );
+
+        // Act
+        Quux actual = container.resolve(new ResolutionToken<Quux>() {});
+
+        // Assert
+        assertThat(actual).isNotNull();
+        assertThat(actual.getFoo1()).isSameAs(instance);
+        assertThat(actual.getFoo2()).isNotSameAs(instance);
+    }
+
     private static Container getNewInjectContainer() {
         return new InjectContainer();
     }

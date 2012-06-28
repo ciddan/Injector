@@ -1,8 +1,11 @@
 package com.communalizer.inject;
 
+import com.communalizer.inject.kernel.ExplicitDependency;
 import com.communalizer.inject.kernel.Registration;
 import com.communalizer.inject.kernel.RegistrationBuilder;
 import com.communalizer.inject.kernel.ResolutionToken;
+import com.thoughtworks.paranamer.BytecodeReadingParanamer;
+import com.thoughtworks.paranamer.Paranamer;
 import org.core4j.Enumerable;
 import org.core4j.Func1;
 
@@ -70,7 +73,6 @@ public class InjectContainer implements Container {
 
                 return instance;
         }
-
     }
 
     @SuppressWarnings("unchecked")
@@ -88,15 +90,43 @@ public class InjectContainer implements Container {
         }
 
         try {
+            Paranamer paranamer = new BytecodeReadingParanamer();
             Constructor<T> constructor = selectGreediestMatchingConstructor(clazz);
+
             Type[] dependencies = constructor.getGenericParameterTypes();
 
             if (dependencies != null && dependencies.length > 0) {
                 Object[] initArgs = new Object[dependencies.length];
 
                 for (int i = 0; i < dependencies.length; i++) {
-                    ResolutionToken token = ResolutionToken.getToken(dependencies[i]);
-                    initArgs[i] = resolve(token);
+                    if (registration.hasExplicitDependencies()) {
+                        String parameterName = paranamer.lookupParameterNames(constructor)[i];
+                        ExplicitDependency dep = registration.getDependency(parameterName);
+
+                        if (dep != null) {
+                            switch (dep.getProviderType()) {
+                                case INSTANCE:
+                                    initArgs[i] = dep.getInstance();
+                                break;
+
+                                case FACTORY:
+                                    initArgs[i] = dep.getFactoryArtefact();
+                                break;
+
+                                case RESOLUTION_TOKEN:
+                                    initArgs[i] = resolve(dep.getResolutionToken());
+                                break;
+                            }
+
+
+                        } else {
+                            ResolutionToken token = ResolutionToken.getToken(dependencies[i]);
+                            initArgs[i] = resolve(token);
+                        }
+                    } else {
+                        ResolutionToken token = ResolutionToken.getToken(dependencies[i]);
+                        initArgs[i] = resolve(token);
+                    }
                 }
 
                 return constructor.newInstance(initArgs);
