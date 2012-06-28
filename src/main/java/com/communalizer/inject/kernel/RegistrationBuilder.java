@@ -2,6 +2,7 @@ package com.communalizer.inject.kernel;
 
 import com.communalizer.inject.kernel.dependencies.ExplicitDependency;
 import com.communalizer.inject.kernel.dependencies.ParameterDependency;
+import com.communalizer.inject.kernel.dependencies.TypeDependency;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,8 +57,8 @@ public class RegistrationBuilder {
         return registration;
     }
 
-    public <T> RegistrationBuilder dependsOn(String parameterName, T value) {
-        this.dependencies.add(new ParameterDependency<T>(parameterName, value));
+    public <T> RegistrationBuilder dependsOn(String parameterName, T instance) {
+        this.dependencies.add(new ParameterDependency<T>(parameterName, instance));
 
         return this;
     }
@@ -70,6 +71,24 @@ public class RegistrationBuilder {
 
     public <T> RegistrationBuilder dependsOn(String parameterName, ResolutionToken<T> token) {
         this.dependencies.add(new ParameterDependency<T>(parameterName, token));
+
+        return this;
+    }
+
+    public <T> RegistrationBuilder dependsOn(TypeToken<T> typeToken, T instance) {
+        this.dependencies.add(new TypeDependency<T>(typeToken,  instance));
+
+        return this;
+    }
+
+    public <T> RegistrationBuilder dependsOn(TypeToken<T> typeToken, Factory<T> factory) {
+        this.dependencies.add(new TypeDependency<T>(typeToken,  factory));
+
+        return this;
+    }
+
+    public <T> RegistrationBuilder dependsOn(TypeToken<T> typeToken, ResolutionToken<T> token) {
+        this.dependencies.add(new TypeDependency<T>(typeToken,  token));
 
         return this;
     }
