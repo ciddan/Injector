@@ -14,26 +14,28 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InjectContainer implements Container {
-    private final Map<String, Registration> registry = new HashMap<String, Registration>();
+    //private final Map<String, Registration> registry = new HashMap<String, Registration>();
+    private final Map<String, TypeProvider<?>> registry = new HashMap<String, TypeProvider<?>>();
 
     @Override
-    public void register(Registration registration) {
-        if (registry.containsKey(registration.getKey())) {
-            throw new RuntimeException(
-                String.format(
-                    "A registration with key: %s already exists. If you're registering multiple components of the same " +
-                    "base- and referenced type, consider naming them.",
-                    registration.getKey()
-                )
-            );
-        }
+    @SuppressWarnings("unchecked")
+    public <T> void register(Registration<T, ?> registration) {
+        TypeToken<T> providedTypeToken =
+            (TypeToken<T>) registration.getComponent().getReferencedTypeToken();
 
-        registry.put(registration.getKey(), registration);
+        TypeProvider<T> provider =
+            (TypeProvider<T>) registry.get(providedTypeToken.getKey());
+
+        if (provider != null) {
+            provider.addRegistration(registration);
+        } else {
+            registry.put(providedTypeToken.getKey(), new TypeProvider<T>(providedTypeToken));
+        }
     }
 
     @Override
-    public void register(Registration... registrations) {
-        for (Registration registration : registrations) {
+    public <T> void register(Registration<T, ?>... registrations) {
+        for (Registration<T, ?> registration : registrations) {
             register(registration);
         }
     }
@@ -52,6 +54,7 @@ public class InjectContainer implements Container {
 
     @Override
     public <T> T resolve(ResolutionToken<T> token) {
+        /*
         if (token == null) {
             throw new IllegalArgumentException("Parameter: token cannot be null.");
         }
@@ -71,6 +74,9 @@ public class InjectContainer implements Container {
 
                 return instance;
         }
+        */
+        
+        return null;
     }
 
     @SuppressWarnings("unchecked")

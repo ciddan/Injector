@@ -7,8 +7,8 @@ import com.communalizer.inject.kernel.ResolutionToken;
 import java.util.Map;
 
 public interface Container {
-    void register(Registration registration);
-    void register(Registration... registrations);
+    <T> void register(Registration<T, ?> registration);
+    <T> void register(Registration<T, ?>... registrations);
 
     void register(RegistrationBuilder builder);
     void register(RegistrationBuilder... builders);
