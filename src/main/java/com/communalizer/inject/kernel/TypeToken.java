@@ -29,6 +29,10 @@ public abstract class TypeToken<T> {
         return new TypeToken<T>(type) {};
     }
 
+    public static <T> TypeToken<T> getToken(Type type) {
+        return new TypeToken<T>(type) {};
+    }
+
     public String getKey() {
         return this.type.toString().replace("class ", "").replace("interface ", "");
     }

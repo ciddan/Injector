@@ -14,10 +14,6 @@ public abstract class Component<TBase, TImpl> {
 
     private final List<Class> wrappedReferencedTypes = new ArrayList<Class>();
 
-    public List<Class> getWrappedReferencedTypes() {
-        return wrappedReferencedTypes;
-    }
-
     public Type getBaseType() {
         return baseType;
     }
@@ -153,6 +149,17 @@ public abstract class Component<TBase, TImpl> {
     }
 
     public String generateKey() {
-        return this.getBaseType().toString().replace("class ", "").replace("interface ", "");
+        String baseKey = this.baseType.toString().replace("class ", "").replace("interface ", "");
+        String refKey = this.referencedType.toString().replace("class ", "").replace("interface ", "");
+
+        return String.format("%s->%s", baseKey, refKey);
+    }
+
+    public TypeToken<TBase> getBaseTypeToken() {
+        return TypeToken.getToken(this.baseType);
+    }
+
+    public TypeToken<TImpl> getReferencedTypeToken() {
+        return TypeToken.getToken(this.referencedType);
     }
 }

@@ -21,8 +21,8 @@ public class InjectContainer implements Container {
         if (registry.containsKey(registration.getKey())) {
             throw new RuntimeException(
                 String.format(
-                    "A registration with key: %s already exists. If registering multiple implementations of the same " +
-                    "interface or base type, consider naming your registrations.",
+                    "A registration with key: %s already exists. If you're registering multiple components of the same " +
+                    "base- and referenced type, consider naming them.",
                     registration.getKey()
                 )
             );
