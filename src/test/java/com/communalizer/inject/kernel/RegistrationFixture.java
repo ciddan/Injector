@@ -93,7 +93,7 @@ public class RegistrationFixture {
     @Test
     public void Registration_GenerateKeyWithoutName_ReturnsTypeKey() {
         // Arrange
-        String expectedKey = "java.lang.Object";
+        String expectedKey = "java.lang.Object->java.lang.String";
         Component<Object, String> component = new Component<Object, String>() {};
 
         Registration<Object, String> registration = new Registration<Object, String>(component);
@@ -108,7 +108,7 @@ public class RegistrationFixture {
     @Test
     public void Registration_GenerateKeyWithEmptyName_ReturnsTypeKey() {
         // Arrange
-        String expectedKey = "java.lang.Object";
+        String expectedKey = "java.lang.Object->java.lang.String";
         Component<Object, String> component = new Component<Object, String>() {};
 
         Registration<Object, String> registration = new Registration<Object, String>(component);
@@ -124,7 +124,7 @@ public class RegistrationFixture {
     @Test
     public void Registration_GenerateKeyWithName_ReturnsCompoundTypeNameKey() {
         // Arrange
-        String expectedKey = "java.util.List<java.lang.Object>-Foo";
+        String expectedKey = "java.util.List<java.lang.Object>->java.util.ArrayList<java.lang.String>-Foo";
         Component<List<Object>, ArrayList<String>> component = new Component<List<Object>, ArrayList<String>>() {};
 
         Registration<List<Object>, ArrayList<String>> registration = new Registration<List<Object>, ArrayList<String>>(component);
