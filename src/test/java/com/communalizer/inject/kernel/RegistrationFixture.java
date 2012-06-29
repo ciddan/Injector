@@ -144,14 +144,16 @@ public class RegistrationFixture {
         Registration<List<Object>, ArrayList<String>> registration = new Registration<List<Object>, ArrayList<String>>(component);
 
         final String anyExplicitValue = "AnyExplicitValue";
-        final ParameterDependency<String> parameterDependency = new ParameterDependency<String>("AnyPropertyName", anyExplicitValue);
+        final String anyPropertyName = "AnyPropertyName";
+
+        final ParameterDependency<String> parameterDependency = new ParameterDependency<String>(anyPropertyName, anyExplicitValue);
 
         // Act
         registration.addDependency(parameterDependency);
 
         // Assert
-        assertThat(registration.getDependency("AnyPropertyName")).isNotNull();
-        assertThat(registration.getDependency("AnyPropertyName")).isSameAs(parameterDependency);
+        assertThat(registration.getDependency(anyPropertyName)).isNotNull();
+        assertThat(registration.getDependency(anyPropertyName)).isSameAs(parameterDependency);
     }
 
     @Test(expected = IllegalArgumentException.class)
