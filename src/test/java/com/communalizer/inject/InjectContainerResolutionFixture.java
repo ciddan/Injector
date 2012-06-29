@@ -13,7 +13,6 @@ import java.util.List;
 import static com.communalizer.inject.kernel.RegistrationBuilder.registration;
 import static org.fest.assertions.Assertions.assertThat;
 
-@Ignore("Ignored during Registration/Provider refactor")
 public class InjectContainerResolutionFixture {
     @Test(expected = IllegalArgumentException.class)
     public void Resolve_WithNullResolutionToken_Throws() {
@@ -41,10 +40,10 @@ public class InjectContainerResolutionFixture {
 
         Container container = getNewInjectContainer();
         container.register(
-                registration()
-                        .component(component)
-                        .instance(instance)
-                        .build()
+            registration()
+                .component(component)
+                .instance(instance)
+                .build()
         );
 
         // Act
@@ -69,10 +68,10 @@ public class InjectContainerResolutionFixture {
 
         Container container = getNewInjectContainer();
         container.register(
-                registration()
-                        .component(component)
-                        .factory(fac)
-                        .build()
+            registration()
+                .component(component)
+                .factory(fac)
+                .build()
         );
 
         // Act
@@ -94,11 +93,11 @@ public class InjectContainerResolutionFixture {
 
         Container container = getNewInjectContainer();
         container.register(
-                registration()
-                        .component(c1)
-                        .named("foo"),
-                registration()
-                        .component(c2)
+            registration()
+                .component(c1)
+                .named("foo"),
+            registration()
+                .component(c2)
         );
 
         // Act
@@ -114,9 +113,9 @@ public class InjectContainerResolutionFixture {
         // Arrange
         Container container = getNewInjectContainer();
         container.register(
-                registration()
-                        .component(new Component<Object, String>() {})
-                        .build()
+            registration()
+                .component(new Component<Object, String>() {})
+                .build()
         );
 
         // Act
@@ -132,9 +131,9 @@ public class InjectContainerResolutionFixture {
         // Arrange
         Container container = getNewInjectContainer();
         container.register(
-                registration()
-                        .component(new Component<List<String>, ArrayList<String>>() {})
-                        .build()
+            registration()
+                .component(new Component<List<String>, ArrayList<String>>() {})
+                .build()
         );
 
         // Act
@@ -150,12 +149,12 @@ public class InjectContainerResolutionFixture {
         // Arrange
         Container container = getNewInjectContainer();
         container.register(
-                registration()
-                        .component(new Component<Bar, BarImpl>() {})
-                        .build(),
-                registration()
-                        .component(new Component<Foo, FooImpl>() {})
-                        .build()
+            registration()
+                .component(new Component<Bar, BarImpl>() {})
+                .build(),
+            registration()
+                .component(new Component<Foo, FooImpl>() {})
+                .build()
         );
 
         // Act
@@ -180,12 +179,12 @@ public class InjectContainerResolutionFixture {
 
         Container container = getNewInjectContainer();
         container.register(
-                registration()
-                        .component(c1)
-                        .build(),
-                registration()
-                        .component(c2)
-                        .build()
+            registration()
+                .component(c1)
+                .build(),
+            registration()
+                .component(c2)
+                .build()
         );
 
         // Act
@@ -208,15 +207,15 @@ public class InjectContainerResolutionFixture {
 
         Container container = getNewInjectContainer();
         container.register(
-                registration()
-                        .component(c1)
-                        .build(),
-                registration()
-                        .component(c2)
-                        .build(),
-                registration()
-                        .component(c3)
-                        .build()
+            registration()
+                .component(c1)
+                .build(),
+            registration()
+                .component(c2)
+                .build(),
+            registration()
+                .component(c3)
+                .build()
         );
 
         // Act
@@ -235,11 +234,11 @@ public class InjectContainerResolutionFixture {
         Component<Quux, QuuxImpl> qc = new Component<Quux, QuuxImpl>() {};
 
         container.register(
-                registration()
-                        .component(fc),
-                registration()
-                        .component(qc)
-                        .dependsOn("foo1", instance)
+            registration()
+                .component(fc),
+            registration()
+                .component(qc)
+                .dependsOn("foo1", instance)
         );
 
         // Act
@@ -268,11 +267,11 @@ public class InjectContainerResolutionFixture {
         };
 
         container.register(
-                registration()
-                        .component(fc),
-                registration()
-                        .component(qc)
-                        .dependsOn("foo1", fooFactory)
+            registration()
+                .component(fc),
+            registration()
+                .component(qc)
+                .dependsOn("foo1", fooFactory)
         );
 
         // Act
@@ -295,15 +294,15 @@ public class InjectContainerResolutionFixture {
         Component<Quux, QuuxImpl> qc = new Component<Quux, QuuxImpl>() {};
 
         container.register(
-                registration()
-                        .component(fc),
-                registration()
-                        .component(fc2)
-                        .instance(instance)
-                        .named("foo"),
-                registration()
-                        .component(qc)
-                        .dependsOn("foo1", new ResolutionToken<Foo>("foo") {})
+            registration()
+                .component(fc),
+            registration()
+                .component(fc2)
+                .instance(instance)
+                .named("foo"),
+            registration()
+                .component(qc)
+                .dependsOn("foo1", new ResolutionToken<Foo>("foo") {})
         );
 
         // Act
