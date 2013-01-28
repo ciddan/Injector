@@ -3,18 +3,15 @@ package com.communalizer.inject.kernel;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 
-@SuppressWarnings("UnusedDeclaration")
-public abstract class ResolutionToken<T> {
+public abstract class TypeToken<T> {
     private final Type type;
-    private final String name;
 
-    public ResolutionToken() {
-        this(null);
+    public TypeToken() {
+        this.type = extractType(0);
     }
 
-    public ResolutionToken(String name) {
-        this.type = extractType(0);
-        this.name = name;
+    private TypeToken(Type type) {
+        this.type = type;
     }
 
     private Type extractType(int pos) {
@@ -28,13 +25,15 @@ public abstract class ResolutionToken<T> {
         return pt.getActualTypeArguments()[pos];
     }
 
-    public String getKey() {
-        String typeName = this.type.toString().replace("class ", "").replace("interface ", "");
+    public static <T> TypeToken<T> getToken(Class<T> type) {
+        return new TypeToken<T>(type) {};
+    }
 
-        if (this.name == null || this.name.equals("")) {
-            return typeName;
-        } else {
-            return String.format("%s-%s", typeName, this.name);
-        }
+    public static <T> TypeToken<T> getToken(Type type) {
+        return new TypeToken<T>(type) {};
+    }
+
+    public String getKey() {
+        return this.type.toString().replace("class ", "").replace("interface ", "");
     }
 }

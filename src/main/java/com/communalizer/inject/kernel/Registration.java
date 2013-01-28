@@ -1,8 +1,14 @@
 package com.communalizer.inject.kernel;
 
+import com.communalizer.inject.kernel.dependencies.ExplicitDependency;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class Registration<TBase, TImpl> {
     private Component<TBase, TImpl> component;
     private String name;
+    private final Map<String, ExplicitDependency> dependencies = new HashMap<String, ExplicitDependency>();
 
     public String getName() {
         return name;
@@ -48,5 +54,30 @@ public class Registration<TBase, TImpl> {
         } else {
             return String.format("%s-%s", component.generateKey(), this.name);
         }
+    }
+
+    public String getResolutionKey() {
+        if (this.name == null || this.name.equals("")) {
+            return this.component.getBaseTypeToken().getKey();
+        } else {
+            return
+                String.format(
+                    "%s-%s",
+                    this.component.getBaseTypeToken().getKey(), this.name
+                );
+        }
+    }
+
+    public <T> void addDependency(ExplicitDependency<T> dependency) {
+        this.dependencies.put(dependency.getIdentifier(), dependency);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ExplicitDependency getDependency(String key) {
+        return this.dependencies.get(key);
+    }
+
+    public boolean hasExplicitDependencies() {
+        return this.dependencies.size() >= 1;
     }
 }

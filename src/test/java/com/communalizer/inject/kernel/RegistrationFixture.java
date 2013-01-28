@@ -1,5 +1,6 @@
 package com.communalizer.inject.kernel;
 
+import com.communalizer.inject.kernel.dependencies.ParameterDependency;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -92,7 +93,7 @@ public class RegistrationFixture {
     @Test
     public void Registration_GenerateKeyWithoutName_ReturnsTypeKey() {
         // Arrange
-        String expectedKey = "java.lang.Object";
+        String expectedKey = "java.lang.Object->java.lang.String";
         Component<Object, String> component = new Component<Object, String>() {};
 
         Registration<Object, String> registration = new Registration<Object, String>(component);
@@ -107,7 +108,7 @@ public class RegistrationFixture {
     @Test
     public void Registration_GenerateKeyWithEmptyName_ReturnsTypeKey() {
         // Arrange
-        String expectedKey = "java.lang.Object";
+        String expectedKey = "java.lang.Object->java.lang.String";
         Component<Object, String> component = new Component<Object, String>() {};
 
         Registration<Object, String> registration = new Registration<Object, String>(component);
@@ -123,7 +124,7 @@ public class RegistrationFixture {
     @Test
     public void Registration_GenerateKeyWithName_ReturnsCompoundTypeNameKey() {
         // Arrange
-        String expectedKey = "java.util.List<java.lang.Object>-Foo";
+        String expectedKey = "java.util.List<java.lang.Object>->java.util.ArrayList<java.lang.String>-Foo";
         Component<List<Object>, ArrayList<String>> component = new Component<List<Object>, ArrayList<String>>() {};
 
         Registration<List<Object>, ArrayList<String>> registration = new Registration<List<Object>, ArrayList<String>>(component);
@@ -134,6 +135,25 @@ public class RegistrationFixture {
 
         // Assert
         assertThat(actual).isEqualTo(expectedKey);
+    }
+
+    @Test
+    public void Registration_CanAddParameterDependencyToInternalCache_AndRetrieveItByName() {
+        // Arrange
+        Component<List<Object>, ArrayList<String>> component = new Component<List<Object>, ArrayList<String>>() {};
+        Registration<List<Object>, ArrayList<String>> registration = new Registration<List<Object>, ArrayList<String>>(component);
+
+        final String anyExplicitValue = "AnyExplicitValue";
+        final String anyPropertyName = "AnyPropertyName";
+
+        final ParameterDependency<String> parameterDependency = new ParameterDependency<String>(anyPropertyName, anyExplicitValue);
+
+        // Act
+        registration.addDependency(parameterDependency);
+
+        // Assert
+        assertThat(registration.getDependency(anyPropertyName)).isNotNull();
+        assertThat(registration.getDependency(anyPropertyName)).isSameAs(parameterDependency);
     }
 
     @Test(expected = IllegalArgumentException.class)

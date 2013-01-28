@@ -1,5 +1,9 @@
 package com.communalizer.inject.kernel;
 
+import com.communalizer.inject.kernel.dependencies.ExplicitDependency;
+import com.communalizer.inject.kernel.dependencies.ParameterDependency;
+import com.communalizer.inject.kernel.dependencies.TypeDependency;
+import org.fest.assertions.StringAssert;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -27,6 +31,9 @@ public class RegistrationBuilderFixture {
 
     @Test
     public void RegistrationBuilder_RawTypeUsage_StillPreservesInnerComponentTypeInformation() {
+        // Arrange
+        final String expectedKey = "java.util.List<java.lang.String>->java.util.ArrayList<java.lang.String>";
+
         // Act
         Registration reg =
             registration()
@@ -34,7 +41,7 @@ public class RegistrationBuilderFixture {
                 .build();
 
         // Assert
-        assertThat(reg.getKey()).isEqualTo("java.util.List<java.lang.String>");
+        assertThat(reg.getKey()).isEqualTo(expectedKey);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -104,4 +111,53 @@ public class RegistrationBuilderFixture {
         // Assert
         assertThat(actual).isEqualTo(anyName);
     }
+
+    @Test
+    public void RegistrationBuilder_CanAddParameterDependencyWithInstance_AndThenRetrieveItFromTheBuiltRegistration() {
+        // Arrange
+        final String anyInstance = "value";
+
+        Component<Object, String> component = new Component<Object, String>() {};
+
+        // Act
+        Registration reg =
+            registration()
+                .component(component)
+                .dependsOn("parameterName", anyInstance)
+                .build();
+
+        // Assert
+        ExplicitDependency dep = reg.getDependency("parameterName");
+
+        assertThat(dep).isNotNull();
+
+        assertThat(dep instanceof ParameterDependency);
+        assertThat(dep.getInstance()).isSameAs(anyInstance);
+    }
+
+    @Test
+    public void RegistrationBuilder_CanAddTypeDependencyWithInstance_AndThenRetrieveItFromTheBuiltRegistration() {
+        // Arrange
+        final String anyInstance = "value";
+
+        TypeToken<String> tt = new TypeToken<String>() {};
+        Component<Object, String> component = new Component<Object, String>() {};
+
+        // Act
+        Registration reg =
+            registration()
+                .component(component)
+                .dependsOn(tt, anyInstance)
+                .build();
+
+        // Assert
+        ExplicitDependency dep = reg.getDependency(tt.getKey());
+
+        assertThat(dep).isNotNull();
+
+        assertThat(dep instanceof TypeDependency);
+        assertThat(dep.getInstance()).isSameAs(anyInstance);
+    }
+
+
 }

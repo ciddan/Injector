@@ -1,6 +1,5 @@
 package com.communalizer.inject.kernel;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -41,20 +40,6 @@ public class ComponentFixture {
         // Assert
         assertThat(component.getBaseType()).isEqualTo(List.class);
         assertThat(component.getReferencedType()).isEqualTo(ArrayList.class);
-    }
-
-    @Test
-    @Ignore("Not sure this is needed yet...")
-    public void Component_CreatedWithGenericTypeParameters_SavesTheReferencedTypeParameters() {
-        // Act
-        Component<List<String>, ArrayList<String>> component = new Component<List<String>, ArrayList<String>>() {};
-
-        // Assert
-        assertThat(component.getWrappedReferencedTypes()).isNotNull();
-        assertThat(component.getWrappedReferencedTypes()).isNotEmpty();
-
-        assertThat(component.getWrappedReferencedTypes().size()).isEqualTo(1);
-        assertThat(component.getWrappedReferencedTypes().get(0)).isEqualTo(String.class);
     }
 
     @Test
@@ -165,9 +150,9 @@ public class ComponentFixture {
     }
 
     @Test
-    public void Component_GenerateKey_ReturnsKeyRepresentingBaseType() {
+    public void Component_GenerateKey_ReturnsKeyRepresentingBaseAndReferencedType() {
         // Arrange
-        String expectedKey = "java.util.List<java.lang.String>";
+        String expectedKey = "java.util.List<java.lang.String>->java.util.ArrayList<java.lang.String>";
         Component<List<String>, ArrayList<String>> component = new Component<List<String>, ArrayList<String>>() {};
 
         // Act
@@ -219,5 +204,33 @@ public class ComponentFixture {
 
         // Assert
         assertThat(type).isEqualTo(ComponentType.FACTORY);
+    }
+    
+    @Test
+    public void Component_GetBaseTypeToken_ReturnsTypeTokenRepresentingTBase() {
+        // Arrange
+        String expectedKey = "java.util.List<java.lang.String>";
+        Component<List<String>, ArrayList<String>> component = new Component<List<String>, ArrayList<String>>() {};
+        
+        // Act
+        TypeToken<List<String>> token = component.getBaseTypeToken();
+
+        // Assert
+        assertThat(token).isNotNull();
+        assertThat(token.getKey()).isEqualTo(expectedKey);
+    }
+
+    @Test
+    public void Component_GetReferencedTypeToken_ReturnsTypeTokenRepresentingTImpl() {
+        // Arrange
+        String expectedKey = "java.util.ArrayList<java.lang.String>";
+        Component<List<String>, ArrayList<String>> component = new Component<List<String>, ArrayList<String>>() {};
+
+        // Act
+        TypeToken<ArrayList<String>> token = component.getReferencedTypeToken();
+
+        // Assert
+        assertThat(token).isNotNull();
+        assertThat(token.getKey()).isEqualTo(expectedKey);
     }
 }
