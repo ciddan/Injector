@@ -1,7 +1,6 @@
 package com.communalizer.inject.kernel.dependencies;
 
 import com.communalizer.inject.kernel.Factory;
-import com.communalizer.inject.kernel.ResolutionToken;
 import com.communalizer.inject.kernel.TypeToken;
 import org.junit.Test;
 
@@ -49,20 +48,6 @@ public class TypeDependencyFixture {
         // Assert
         assertThat(typeDependency).isNotNull();
         assertThat(typeDependency.getFactoryArtifact()).isSameAs(anyString);
-    }
-
-    @Test
-    public void TypeDependency_CanBeCreatedWithResolutionToken() {
-        // Arrange
-        ResolutionToken<String> rt = new ResolutionToken<String>("foo") {};
-        TypeToken<String> tt = new TypeToken<String>() {};
-
-        // Act
-        TypeDependency<String> dep = new TypeDependency<String>(tt, rt);
-
-        // Assert
-        assertThat(dep).isNotNull();
-        assertThat(dep.getResolutionToken()).isSameAs(rt);
     }
 
     @Test

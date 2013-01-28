@@ -14,22 +14,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InjectContainer implements Container {
-    //private final Map<String, Registration> registry = new HashMap<String, Registration>();
     private final Map<String, TypeProvider<?>> registry = new HashMap<String, TypeProvider<?>>();
 
     @Override
     @SuppressWarnings("unchecked")
     public <T> void register(Registration<T, ?> registration) {
-        TypeToken<T> providedTypeToken =
-            (TypeToken<T>) registration.getComponent().getReferencedTypeToken();
+        TypeToken<T> baseTypeToken = registration.getComponent().getBaseTypeToken();
 
         TypeProvider<T> provider =
-            (TypeProvider<T>) registry.get(providedTypeToken.getKey());
+            (TypeProvider<T>) registry.get(baseTypeToken.getKey());
 
         if (provider != null) {
             provider.addRegistration(registration);
         } else {
-            registry.put(providedTypeToken.getKey(), new TypeProvider<T>(providedTypeToken));
+            TypeProvider<T> typeProvider = new TypeProvider<T>(baseTypeToken);
+            typeProvider.addRegistration(registration);
+
+            registry.put(baseTypeToken.getKey(), typeProvider);
         }
     }
 
@@ -41,6 +42,7 @@ public class InjectContainer implements Container {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void register(RegistrationBuilder builder) {
         register(builder.build());
     }
@@ -53,16 +55,40 @@ public class InjectContainer implements Container {
     }
 
     @Override
-    public <T> T resolve(ResolutionToken<T> token) {
-        /*
+    public <T> T resolve(TypeToken<T> token) {
         if (token == null) {
             throw new IllegalArgumentException("Parameter: token cannot be null.");
         }
 
-        Registration registration = registry.get(token.getKey());
-        if (registration == null) {
-            throw new RuntimeException(String.format("Could not find a registration matching type token: %s.", token.getKey()));
+        return resolveImpl(token, null);
+    }
+
+    @Override
+    public <T> T resolve(TypeToken<T> token, String name) {
+        if (token == null) {
+            throw new IllegalArgumentException("Parameter: token cannot be null.");
         }
+
+        if (name == null) {
+            throw new IllegalArgumentException("Parameter: name cannot be null.");
+        }
+
+        return resolveImpl(token, name);
+    }
+
+    private <T> T resolveImpl(TypeToken<T> token, String name) {
+        TypeProvider typeProvider = registry.get(token.getKey());
+
+        if (typeProvider == null) {
+            throw new RuntimeException(
+                String.format(
+                    "Could not find a registration matching type token: %s.",
+                    token.getKey()
+                )
+            );
+        }
+
+        Registration registration = typeProvider.getRegistration(token, name);
 
         switch (registration.getComponent().getComponentType()) {
             case REFLECTION:
@@ -74,9 +100,6 @@ public class InjectContainer implements Container {
 
                 return instance;
         }
-        */
-        
-        return null;
     }
 
     @SuppressWarnings("unchecked")
@@ -117,18 +140,24 @@ public class InjectContainer implements Container {
                                     initArgs[i] = dep.getFactoryArtifact();
                                 break;
 
-                                case RESOLUTION_TOKEN:
-                                    initArgs[i] = resolve(dep.getResolutionToken());
+                                case TYPE_TOKEN:
+                                    String depComName = dep.getDependencyComponentName();
+
+                                    if (depComName == null || depComName.equals("")) {
+                                        initArgs[i] = resolve(dep.getTypeToken());
+                                    } else {
+                                        initArgs[i] = resolve(dep.getTypeToken(), depComName);
+                                    }
                                 break;
                             }
 
 
                         } else {
-                            ResolutionToken token = ResolutionToken.getToken(dependencies[i]);
+                            TypeToken token = TypeToken.getToken(dependencies[i]);
                             initArgs[i] = resolve(token);
                         }
                     } else {
-                        ResolutionToken token = ResolutionToken.getToken(dependencies[i]);
+                        TypeToken token = TypeToken.getToken(dependencies[i]);
                         initArgs[i] = resolve(token);
                     }
                 }
@@ -148,14 +177,14 @@ public class InjectContainer implements Container {
      */
     private <T> Constructor<T> selectGreediestMatchingConstructor(Class<T> type) {
         Enumerable<Constructor<T>> constructors =
-                Enumerable.create((Constructor<T>[]) type.getConstructors())
-                        .orderBy(new Func1<Constructor<T>, Comparable>() {
-                            @Override
-                            public Comparable apply(Constructor<T> tConstructor) {
-                                return tConstructor.getTypeParameters().length;
-                            }
-                        })
-                        .reverse();
+            Enumerable.create((Constructor<T>[]) type.getConstructors())
+                .orderBy(new Func1<Constructor<T>, Comparable>() {
+                    @Override
+                    public Comparable apply(Constructor<T> tConstructor) {
+                        return tConstructor.getTypeParameters().length;
+                    }
+                })
+                .reverse();
 
         for (Constructor<T> constructor : constructors) {
             if (isSatisfiable(constructor)) {
@@ -177,7 +206,8 @@ public class InjectContainer implements Container {
         Type[] dependencies = constructor.getGenericParameterTypes();
 
         for (Type dependency : dependencies) {
-            ResolutionToken token = ResolutionToken.getToken(dependency);
+            TypeToken token = TypeToken.getToken(dependency);
+
 
             if (!registry.containsKey(token.getKey())) {
                 return false;
@@ -188,7 +218,7 @@ public class InjectContainer implements Container {
     }
 
     @Override
-    public Map<String, Registration> getRegistry() {
-        return registry;
+    public Map<String, TypeProvider<?>> getRegistry() {
+        return this.registry;
     }
 }

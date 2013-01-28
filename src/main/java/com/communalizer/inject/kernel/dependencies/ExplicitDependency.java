@@ -1,15 +1,17 @@
 package com.communalizer.inject.kernel.dependencies;
 
-import com.communalizer.inject.kernel.ResolutionToken;
+import com.communalizer.inject.kernel.TypeToken;
 
 public interface ExplicitDependency<T> {
     T getInstance();
 
     T getFactoryArtifact();
 
-    ResolutionToken<T> getResolutionToken();
+    TypeToken<T> getTypeToken();
 
     DependencyProviderType getProviderType();
 
     String getIdentifier();
+
+    String getDependencyComponentName();
 }

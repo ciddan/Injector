@@ -2,10 +2,10 @@ package com.communalizer.inject.kernel.dependencies;
 
 
 import com.communalizer.inject.kernel.Factory;
-import com.communalizer.inject.kernel.ResolutionToken;
+import com.communalizer.inject.kernel.TypeToken;
 
 public class ParameterDependency<T> extends AbstractDependency<T> {
-    private final String propertyName;
+    private String propertyName = "";
 
     public String getIdentifier() {
         return propertyName;
@@ -25,11 +25,19 @@ public class ParameterDependency<T> extends AbstractDependency<T> {
         this.factory = factory;
     }
 
-    public ParameterDependency(String parameterName, ResolutionToken<T> token) {
+    public ParameterDependency(String parameterName, TypeToken<T> token) {
         verifyPropertyName(parameterName);
 
         this.propertyName = parameterName;
-        this.resolutionToken = token;
+        this.typeToken = token;
+    }
+
+    public ParameterDependency(String parameterName, TypeToken<T> token, String explicitComponentName) {
+        verifyPropertyName(parameterName);
+
+        this.propertyName = parameterName;
+        this.typeToken = token;
+        this.componentName = explicitComponentName;
     }
 
     private void verifyPropertyName(String parameterName) {

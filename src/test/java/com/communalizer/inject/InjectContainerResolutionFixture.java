@@ -2,8 +2,7 @@ package com.communalizer.inject;
 
 import com.communalizer.inject.kernel.Component;
 import com.communalizer.inject.kernel.Factory;
-import com.communalizer.inject.kernel.ResolutionToken;
-import org.junit.Ignore;
+import com.communalizer.inject.kernel.TypeToken;
 import org.junit.Test;
 import testclasses.*;
 
@@ -29,7 +28,7 @@ public class InjectContainerResolutionFixture {
         Container container = getNewInjectContainer();
 
         // Act
-        container.resolve(new ResolutionToken<List<String>>() {});
+        container.resolve(new TypeToken<List<String>>() {});
     }
 
     @Test
@@ -47,7 +46,7 @@ public class InjectContainerResolutionFixture {
         );
 
         // Act
-        List<String> actual = container.resolve(new ResolutionToken<List<String>>() {});
+        List<String> actual = container.resolve(new TypeToken<List<String>>() {});
 
         // Assert
         assertThat(actual).isNotNull();
@@ -75,8 +74,8 @@ public class InjectContainerResolutionFixture {
         );
 
         // Act
-        List<String> actual1 = container.resolve(new ResolutionToken<List<String>>() {});
-        List<String> actual2 = container.resolve(new ResolutionToken<List<String>>() {});
+        List<String> actual1 = container.resolve(new TypeToken<List<String>>() {});
+        List<String> actual2 = container.resolve(new TypeToken<List<String>>() {});
 
         // Assert
         assertThat(actual1).isNotNull();
@@ -101,7 +100,7 @@ public class InjectContainerResolutionFixture {
         );
 
         // Act
-        Object actual = container.resolve(new ResolutionToken<Object>("foo") {});
+        Object actual = container.resolve(new TypeToken<Object>() {}, "foo");
 
         // Assert
         assertThat(actual).isNotNull();
@@ -119,7 +118,7 @@ public class InjectContainerResolutionFixture {
         );
 
         // Act
-        Object actual = container.resolve(new ResolutionToken<Object>() {});
+        Object actual = container.resolve(new TypeToken<Object>() {});
 
         // Assert
         assertThat(actual).isNotNull();
@@ -137,7 +136,7 @@ public class InjectContainerResolutionFixture {
         );
 
         // Act
-        List<String> actual = container.resolve(new ResolutionToken<List<String>>() {});
+        List<String> actual = container.resolve(new TypeToken<List<String>>() {});
 
         // Assert
         assertThat(actual).isNotNull();
@@ -158,7 +157,7 @@ public class InjectContainerResolutionFixture {
         );
 
         // Act
-        Bar actual = container.resolve(new ResolutionToken<Bar>() {});
+        Bar actual = container.resolve(new TypeToken<Bar>() {});
 
         // Assert
         assertThat(actual).isNotNull();
@@ -188,7 +187,7 @@ public class InjectContainerResolutionFixture {
         );
 
         // Act
-        List actual = container.resolve(new ResolutionToken<List<Integer>>() {});
+        List actual = container.resolve(new TypeToken<List<Integer>>() {});
 
         // Assert
         assertThat(actual).isNotNull();
@@ -219,7 +218,7 @@ public class InjectContainerResolutionFixture {
         );
 
         // Act
-        Baz baz = container.resolve(new ResolutionToken<Baz>() {});
+        Baz baz = container.resolve(new TypeToken<Baz>() {});
 
         // Assert
         assertThat(baz.getStrings()).isSameAs(l1);
@@ -242,7 +241,7 @@ public class InjectContainerResolutionFixture {
         );
 
         // Act
-        Quux actual = container.resolve(new ResolutionToken<Quux>() {});
+        Quux actual = container.resolve(new TypeToken<Quux>() {});
 
         // Assert
         assertThat(actual).isNotNull();
@@ -275,7 +274,7 @@ public class InjectContainerResolutionFixture {
         );
 
         // Act
-        Quux actual = container.resolve(new ResolutionToken<Quux>() {});
+        Quux actual = container.resolve(new TypeToken<Quux>() {});
 
         // Assert
         assertThat(actual).isNotNull();
@@ -302,11 +301,11 @@ public class InjectContainerResolutionFixture {
                 .named("foo"),
             registration()
                 .component(qc)
-                .dependsOn("foo1", new ResolutionToken<Foo>("foo") {})
+                .dependsOn("foo1", new TypeToken<Foo>() {}, "foo")
         );
 
         // Act
-        Quux actual = container.resolve(new ResolutionToken<Quux>() {});
+        Quux actual = container.resolve(new TypeToken<Quux>() {});
 
         // Assert
         assertThat(actual).isNotNull();

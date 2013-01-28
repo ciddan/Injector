@@ -56,6 +56,18 @@ public class Registration<TBase, TImpl> {
         }
     }
 
+    public String getResolutionKey() {
+        if (this.name == null || this.name.equals("")) {
+            return this.component.getBaseTypeToken().getKey();
+        } else {
+            return
+                String.format(
+                    "%s-%s",
+                    this.component.getBaseTypeToken().getKey(), this.name
+                );
+        }
+    }
+
     public <T> void addDependency(ExplicitDependency<T> dependency) {
         this.dependencies.put(dependency.getIdentifier(), dependency);
     }

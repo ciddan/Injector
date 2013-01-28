@@ -1,12 +1,13 @@
 package com.communalizer.inject.kernel.dependencies;
 
 import com.communalizer.inject.kernel.Factory;
-import com.communalizer.inject.kernel.ResolutionToken;
+import com.communalizer.inject.kernel.TypeToken;
 
 public abstract class AbstractDependency<T> implements ExplicitDependency<T> {
     protected T instance;
     protected Factory<T> factory;
-    protected ResolutionToken<T> resolutionToken;
+    protected TypeToken<T> typeToken;
+    protected String componentName;
 
     @Override
     public T getInstance() {
@@ -19,8 +20,13 @@ public abstract class AbstractDependency<T> implements ExplicitDependency<T> {
     }
 
     @Override
-    public ResolutionToken<T> getResolutionToken() {
-        return resolutionToken;
+    public TypeToken<T> getTypeToken() {
+        return typeToken;
+    }
+
+    @Override
+    public String getDependencyComponentName() {
+        return componentName;
     }
 
     @Override
@@ -33,6 +39,6 @@ public abstract class AbstractDependency<T> implements ExplicitDependency<T> {
             return DependencyProviderType.FACTORY;
         }
 
-        return DependencyProviderType.RESOLUTION_TOKEN;
+        return DependencyProviderType.TYPE_TOKEN;
     }
 }

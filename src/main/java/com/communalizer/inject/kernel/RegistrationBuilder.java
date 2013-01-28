@@ -69,8 +69,14 @@ public class RegistrationBuilder {
         return this;
     }
 
-    public <T> RegistrationBuilder dependsOn(String parameterName, ResolutionToken<T> token) {
+    public <T> RegistrationBuilder dependsOn(String parameterName, TypeToken<T> token) {
         this.dependencies.add(new ParameterDependency<T>(parameterName, token));
+
+        return this;
+    }
+
+    public <T> RegistrationBuilder dependsOn(String parameterName, TypeToken<T> token, String componentName) {
+        this.dependencies.add(new ParameterDependency<T>(parameterName, token, componentName));
 
         return this;
     }
@@ -83,12 +89,6 @@ public class RegistrationBuilder {
 
     public <T> RegistrationBuilder dependsOn(TypeToken<T> typeToken, Factory<T> factory) {
         this.dependencies.add(new TypeDependency<T>(typeToken,  factory));
-
-        return this;
-    }
-
-    public <T> RegistrationBuilder dependsOn(TypeToken<T> typeToken, ResolutionToken<T> token) {
-        this.dependencies.add(new TypeDependency<T>(typeToken,  token));
 
         return this;
     }

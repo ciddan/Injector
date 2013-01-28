@@ -1,7 +1,6 @@
 package com.communalizer.inject.kernel.dependencies;
 
 import com.communalizer.inject.kernel.Factory;
-import com.communalizer.inject.kernel.ResolutionToken;
 import com.communalizer.inject.kernel.TypeToken;
 
 public class TypeDependency<T> extends AbstractDependency<T> {
@@ -21,11 +20,10 @@ public class TypeDependency<T> extends AbstractDependency<T> {
         this.factory = factory;
     }
 
-    public TypeDependency(TypeToken<T> token, ResolutionToken<T> resolutionToken) {
+    public TypeDependency(TypeToken<T> token) {
         verifyToken(token);
 
         this.typeToken = token;
-        this.resolutionToken = resolutionToken;
     }
 
     private void verifyToken(TypeToken<T> token) {
