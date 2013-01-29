@@ -2,6 +2,8 @@ package com.communalizer.inject.kernel;
 
 import com.communalizer.inject.kernel.dependencies.ParameterDependency;
 import org.junit.Test;
+import testclasses.Foo;
+import testclasses.FooImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +78,6 @@ public class RegistrationFixture {
         // Arrange
         String name = "ANY_NAME";
         Component<Object, String> component = new Component<Object, String>() {};
-
         Registration<Object, String> registration = new Registration<Object, String>(component);
 
         // Act
@@ -88,6 +89,37 @@ public class RegistrationFixture {
 
         assertThat(registration.getName()).isNotNull();
         assertThat(registration.getName()).isSameAs(name);
+    }
+
+    @Test
+    public void Registration_CanSet_Lifestyle() {
+        // Arrange
+        Lifestyle lifestyle = Lifestyle.SINGLETON;
+
+        Component<Foo, FooImpl> component = new Component<Foo, FooImpl>() {};
+        Registration<Foo, FooImpl> registration = new Registration<Foo, FooImpl>(component);
+
+        // Act
+        registration.setLifestyle(Lifestyle.SINGLETON);
+
+        // Assert
+        assertThat(registration.getComponent()).isNotNull();
+        assertThat(registration.getComponent()).isSameAs(component);
+
+        assertThat(registration.getLifestyle()).isNotNull();
+        assertThat(registration.getLifestyle()).isSameAs(lifestyle);
+    }
+
+    @Test
+    public void Lifestyle_DefaultsToSingleton_IfNotSpecified() {
+        // Arrange
+        Component<Foo, FooImpl> component = new Component<Foo, FooImpl>() {};
+
+        // Act
+        Registration<Foo, FooImpl> registration = new Registration<Foo, FooImpl>(component);
+
+        // Assert
+        assertThat(registration.getLifestyle()).isEqualTo(Lifestyle.SINGLETON);
     }
 
     @Test

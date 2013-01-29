@@ -9,6 +9,7 @@ public class Registration<TBase, TImpl> {
     private Component<TBase, TImpl> component;
     private String name;
     private final Map<String, ExplicitDependency> dependencies = new HashMap<String, ExplicitDependency>();
+    private Lifestyle lifestyle = Lifestyle.SINGLETON;
 
     public String getName() {
         return name;
@@ -34,6 +35,14 @@ public class Registration<TBase, TImpl> {
 
     public void setInstance(TBase instance) {
         component.setExplicitInstance(instance);
+    }
+
+    public Lifestyle getLifestyle() {
+        return lifestyle;
+    }
+
+    public void setLifestyle(Lifestyle lifestyle) {
+        this.lifestyle = lifestyle;
     }
 
     public Component<TBase, TImpl> getComponent() {

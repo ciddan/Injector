@@ -10,6 +10,7 @@ import java.util.List;
 public class RegistrationBuilder {
     private List<ExplicitDependency> dependencies = new ArrayList<ExplicitDependency>();
     private Component component;
+    private Lifestyle lifestyle;
     private Factory factory;
     private Object instance;
     private String name;
@@ -42,19 +43,10 @@ public class RegistrationBuilder {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
-    public Registration build() {
-        Registration registration = new Registration(component);
+    public RegistrationBuilder lifestyle(Lifestyle lifestyle) {
+        this.lifestyle = lifestyle;
 
-        registration.setName(name);
-        registration.setFactory(factory);
-        registration.setInstance(instance);
-
-        for (ExplicitDependency dependency : dependencies) {
-            registration.addDependency(dependency);
-        }
-
-        return registration;
+        return this;
     }
 
     public <T> RegistrationBuilder dependsOn(String parameterName, T instance) {
@@ -91,5 +83,21 @@ public class RegistrationBuilder {
         this.dependencies.add(new TypeDependency<T>(typeToken,  factory));
 
         return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    public Registration build() {
+        Registration registration = new Registration(component);
+
+        registration.setName(name);
+        registration.setFactory(factory);
+        registration.setInstance(instance);
+        registration.setLifestyle(lifestyle);
+
+        for (ExplicitDependency dependency : dependencies) {
+            registration.addDependency(dependency);
+        }
+
+        return registration;
     }
 }

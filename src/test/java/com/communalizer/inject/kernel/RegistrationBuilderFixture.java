@@ -5,6 +5,8 @@ import com.communalizer.inject.kernel.dependencies.ParameterDependency;
 import com.communalizer.inject.kernel.dependencies.TypeDependency;
 import org.fest.assertions.StringAssert;
 import org.junit.Test;
+import testclasses.Foo;
+import testclasses.FooImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,23 @@ public class RegistrationBuilderFixture {
         // Assert
         assertThat(reg).isNotNull();
         assertThat(reg.getComponent()).isSameAs(component);
+    }
+
+    @Test
+    public void RegistrationBuilder_CanSpecify_ComponentLifestyle() {
+        // Arrange
+        Component<Foo, FooImpl> component = new Component<Foo, FooImpl>() {};
+
+        // Act
+        Registration reg =
+            registration()
+                .component(component)
+                .lifestyle(Lifestyle.TRANSIENT)
+                .build();
+
+        // Assert
+        assertThat(reg).isNotNull();
+        assertThat(reg.getLifestyle()).isEqualTo(Lifestyle.TRANSIENT);
     }
 
     @Test
