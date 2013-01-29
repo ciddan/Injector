@@ -43,7 +43,7 @@ Let's say BarImpl requires a Foo in its Constructor. Upon resolution, Injector w
 container.register(
     registration()
         .component(new Component<Foo, FooImpl>() {})
-     .build(),
+        .build(),
     registration()
         .component(new Component<Bar, BarImpl>() {})
         .build()
@@ -58,15 +58,15 @@ You can register a factory function along with your component registration. That
 ```Java
 Factory<List<String>> factory = new Factory<List<String>>() {
     @Override
-   public List<String> create() {
-    return new ArrayList<String>();
-   }
+    public List<String> create() {
+        return new ArrayList<String>();
+    }
 };
 
 container.register(
     registration()
         .component(new Component<List<String>, ArrayList<String>>() {})
-     .factory(factory)
+        .factory(factory)
         .build()
 );
 
