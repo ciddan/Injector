@@ -11,12 +11,12 @@ Container container = new InjectContainer();
 
 // Register your types
 container.register(
-	registration()
-		.component(new Component<Foo, FooImpl>() {})
+   registration()
+     .component(new Component<Foo, FooImpl>() {})
      .build(),
-	registration()
-		.component(new Component<Bar, BarImpl>() {})
-		.build()
+   registration()
+     .component(new Component<Bar, BarImpl>() {})
+     .build()
 );
 
 // And resolve them later
@@ -41,12 +41,12 @@ Let's say BarImpl requires a Foo in its Constructor. Upon resolution, Injector w
 
 ```Java
 container.register(
-	registration()
-		.component(new Component<Foo, FooImpl>() {})
+    registration()
+        .component(new Component<Foo, FooImpl>() {})
      .build(),
-	registration()
-		.component(new Component<Bar, BarImpl>() {})
-		.build()
+    registration()
+        .component(new Component<Bar, BarImpl>() {})
+        .build()
 );
 
 Bar bar = container.resolve(new TypeToken<Bar>() {});
@@ -57,17 +57,17 @@ You can register a factory function along with your component registration. That
 
 ```Java
 Factory<List<String>> factory = new Factory<List<String>>() {
-	@Override
+    @Override
    public List<String> create() {
-   	return new ArrayList<String>();
+    return new ArrayList<String>();
    }
 };
 
 container.register(
-	registration()
-		.component(new Component<List<String>, ArrayList<String>>() {})
+    registration()
+        .component(new Component<List<String>, ArrayList<String>>() {})
      .factory(factory)
-		.build()
+        .build()
 );
 
 List<String> actual1 = container.resolve(new TypeToken<List<String>>() {});
