@@ -225,6 +225,35 @@ public class InjectContainerResolutionFixture {
     }
 
     @Test
+    public void Resolve_ComponentWithUnregisteredDependencies_ThrowsRuntimeException() {
+        // Arrange
+        Container container = getNewInjectContainer();
+        Component<Quux, QuuxImpl> qc = new Component<Quux, QuuxImpl>() {};
+
+        container.register(
+            registration()
+                .component(qc)
+        );
+
+        // Act
+        try {
+            container.resolve(new TypeToken<Quux>() {});
+        } catch (Exception e) {
+            // Assert
+            assertThat(e.getMessage()).isEqualTo(
+                String.format(
+                    "java.lang.RuntimeException: Component '%s' has unregistered dependencies ['%s', '%s']. Cannot resolve.",
+                    "testclasses.Quux->testclasses.QuuxImpl", "testclasses.Foo", "testclasses.Foo"
+                )
+            );
+
+            return;
+        }
+
+        assertThat(false);
+    }
+
+    @Test
     public void Resolve_ComponentWithExplicitDependencyInstance_GetsThatExplicitInstanceInjectedForTheCorrectParameter() {
         // Arrange
         Container container = getNewInjectContainer();

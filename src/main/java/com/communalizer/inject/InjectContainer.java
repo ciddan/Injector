@@ -116,9 +116,14 @@ public class InjectContainer implements Container {
             clazz =  (Class<T>) referencedType;
         }
 
+        Paranamer paranamer = new BytecodeReadingParanamer();
+
         try {
-            Paranamer paranamer = new BytecodeReadingParanamer();
-            Constructor<T> constructor = selectGreediestMatchingConstructor(clazz);
+            Constructor<T> constructor =
+                selectGreediestMatchingConstructor(
+                    clazz,
+                    registration.getComponent().generateKey()
+                );
 
             Type[] dependencies = constructor.getGenericParameterTypes();
 
@@ -175,7 +180,7 @@ public class InjectContainer implements Container {
     /**
      * Evaluates all available constructors and selects the largest satisfiable constructor
      */
-    private <T> Constructor<T> selectGreediestMatchingConstructor(Class<T> type) {
+    private <T> Constructor<T> selectGreediestMatchingConstructor(Class<T> type, String componentKey) {
         Enumerable<Constructor<T>> constructors =
             Enumerable.create((Constructor<T>[]) type.getConstructors())
                 .orderBy(new Func1<Constructor<T>, Comparable>() {
@@ -192,7 +197,26 @@ public class InjectContainer implements Container {
             }
         }
 
-        return null;
+        // If we get here, no constructor has been deemed satisfiable.
+        // The component cannot be resolved.
+        StringBuilder builder = new StringBuilder();
+        builder.append("Component '");
+        builder.append(componentKey);
+        builder.append("' has unregistered dependencies [");
+
+        Constructor<T> ctor = constructors.first();
+        Type[] dependencies = ctor.getGenericParameterTypes();
+
+        for (Type dependency : dependencies) {
+            TypeToken token = TypeToken.getToken(dependency);
+            if (!registry.containsKey(token.getKey())) {
+                builder.append("'").append(token.getKey()).append("'").append(", ");
+            }
+        }
+
+        builder.append("]. Cannot resolve.");
+
+        throw new RuntimeException(builder.toString().replace(", ]", "]"));
     }
 
     /**
@@ -207,7 +231,6 @@ public class InjectContainer implements Container {
 
         for (Type dependency : dependencies) {
             TypeToken token = TypeToken.getToken(dependency);
-
 
             if (!registry.containsKey(token.getKey())) {
                 return false;
