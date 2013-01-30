@@ -33,7 +33,7 @@ public class InjectContainerRegistrationFixture {
     @Test
     public void Register_Component_AddsItToRegistryWithExpectedKey() {
         // Arrange
-        String expectedKey = "java.util.List<java.lang.String>->java.util.ArrayList<java.lang.String>";
+        String expectedKey = "java.util.List<java.lang.String>";
         Container container = getNewInjectContainer();
 
         // Act
@@ -44,8 +44,8 @@ public class InjectContainerRegistrationFixture {
         );
 
         // Assert
-        //final Registration actual = container.getRegistry().get(expectedKey);
-        //assertThat(actual).isNotNull();
+        final TypeProvider actual = container.getRegistry().get(expectedKey);
+        assertThat(actual).isNotNull();
     }
 
     @Test
