@@ -6,56 +6,56 @@ import org.junit.Test;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class ParameterDependencyFixture {
-    @Test(expected = IllegalArgumentException.class)
-    public void ParameterDependency_WithNullPropertyName_Throws() {
-        new ParameterDependency<Class>(null, String.class);
-    }
+  @Test(expected = IllegalArgumentException.class)
+  public void ParameterDependency_WithNullPropertyName_Throws() {
+    new ParameterDependency<Class>(null, String.class);
+  }
 
-    @Test
-    public void ParameterDependency_WithInstance_ReturnsInstanceWhenRequestingInstance() {
-        // Arrange
-        ParameterDependency<Class> dependency = new ParameterDependency<Class>("foo", String.class);
+  @Test
+  public void ParameterDependency_WithInstance_ReturnsInstanceWhenRequestingInstance() {
+    // Arrange
+    ParameterDependency<Class> dependency = new ParameterDependency<Class>("foo", String.class);
 
-        // Act
-        Class actual = dependency.getInstance();
+    // Act
+    Class actual = dependency.getInstance();
 
-        // Assert
-        assertThat(actual).isNotNull();
-        assertThat(actual).isEqualTo(String.class);
-    }
+    // Assert
+    assertThat(actual).isNotNull();
+    assertThat(actual).isEqualTo(String.class);
+  }
 
 
-    @Test
-    public void ParameterDependency_WithFactory_ReturnsInstanceCreatedByFactoryWhenRequestingInstance() {
-        // Arrange
-        final String anyString = "ANY_STRING";
+  @Test
+  public void ParameterDependency_WithFactory_ReturnsInstanceCreatedByFactoryWhenRequestingInstance() {
+    // Arrange
+    final String anyString = "ANY_STRING";
 
-        Factory<String> factory = new Factory<String>() {
-            @Override
-            public String create() {
-                return anyString;
-            }
-        };
-        ParameterDependency<String> dependency = new ParameterDependency<String>("foo", factory);
+    Factory<String> factory = new Factory<String>() {
+      @Override
+      public String create() {
+        return anyString;
+      }
+    };
+    ParameterDependency<String> dependency = new ParameterDependency<String>("foo", factory);
 
-        // Act
-        String actual = dependency.getFactoryArtifact();
+    // Act
+    String actual = dependency.getFactoryArtifact();
 
-        // Assert
-        assertThat(actual).isNotNull();
-        assertThat(actual).isSameAs(anyString);
-    }
+    // Assert
+    assertThat(actual).isNotNull();
+    assertThat(actual).isSameAs(anyString);
+  }
 
-    @Test
-    public void ParameterDependency_GetIdentifier_ReturnsParameterName() {
-        // Arrange
-        String expected = "foo";
-        ParameterDependency<Class> dependency = new ParameterDependency<Class>("foo", String.class);
+  @Test
+  public void ParameterDependency_GetIdentifier_ReturnsParameterName() {
+    // Arrange
+    String expected = "foo";
+    ParameterDependency<Class> dependency = new ParameterDependency<Class>("foo", String.class);
 
-        // Act
-        String actual = dependency.getIdentifier();
+    // Act
+    String actual = dependency.getIdentifier();
 
-        // Assert
-        assertThat(actual).isEqualTo(expected);
-    }
+    // Assert
+    assertThat(actual).isEqualTo(expected);
+  }
 }

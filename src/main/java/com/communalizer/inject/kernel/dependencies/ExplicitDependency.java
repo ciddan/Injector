@@ -3,15 +3,15 @@ package com.communalizer.inject.kernel.dependencies;
 import com.communalizer.inject.kernel.TypeToken;
 
 public interface ExplicitDependency<T> {
-    T getInstance();
+  T getInstance();
 
-    T getFactoryArtifact();
+  T getFactoryArtifact();
 
-    TypeToken<T> getTypeToken();
+  TypeToken<T> getTypeToken();
 
-    DependencyProviderType getProviderType();
+  DependencyProviderType getProviderType();
 
-    String getIdentifier();
+  String getIdentifier();
 
-    String getDependencyComponentName();
+  String getDependencyComponentName();
 }

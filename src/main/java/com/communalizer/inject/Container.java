@@ -8,15 +8,15 @@ import com.communalizer.inject.kernel.TypeToken;
 import java.util.Map;
 
 public interface Container {
-    <T> void register(Registration<T, ?> registration);
-    <T> void register(Registration<T, ?>... registrations);
+  <T> void register(Registration<T, ?> registration);
+  <T> void register(Registration<T, ?>... registrations);
 
-    void register(RegistrationBuilder builder);
-    void register(RegistrationBuilder... builders);
+  void register(RegistrationBuilder builder);
+  void register(RegistrationBuilder... builders);
 
-    <T> T resolve(TypeToken<T> token);
-    <T> T resolve(TypeToken<T> token, String name);
+  <T> T resolve(TypeToken<T> token);
+  <T> T resolve(TypeToken<T> token, String name);
 
-    Map<String, TypeProvider<?>> getRegistry();
+  Map<String, TypeProvider<?>> getRegistry();
 
 }

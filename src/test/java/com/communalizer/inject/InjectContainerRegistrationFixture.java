@@ -13,124 +13,124 @@ import static com.communalizer.inject.kernel.RegistrationBuilder.registration;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class InjectContainerRegistrationFixture {
-    @Test
-    public void Register_Component_AddsItToRegistry() {
-        // Arrange
-        Container container = getNewInjectContainer();
+  @Test
+  public void Register_Component_AddsItToRegistry() {
+    // Arrange
+    Container container = getNewInjectContainer();
 
-        // Act
-        container.register(
-            registration()
-                .component(new Component<Object, String>() {})
-                .build()
-        );
+    // Act
+    container.register(
+      registration()
+        .component(new Component<Object, String>() {})
+        .build()
+    );
 
-        // Assert
-        assertThat(container.getRegistry()).isNotNull();
-        assertThat(container.getRegistry()).isNotEmpty();
-    }
+    // Assert
+    assertThat(container.getRegistry()).isNotNull();
+    assertThat(container.getRegistry()).isNotEmpty();
+  }
 
-    @Test
-    public void Register_Component_AddsItToRegistryWithExpectedKey() {
-        // Arrange
-        String expectedKey = "java.util.List<java.lang.String>";
-        Container container = getNewInjectContainer();
+  @Test
+  public void Register_Component_AddsItToRegistryWithExpectedKey() {
+    // Arrange
+    String expectedKey = "java.util.List<java.lang.String>";
+    Container container = getNewInjectContainer();
 
-        // Act
-        container.register(
-            registration()
-                .component(new Component<List<String>, ArrayList<String>>() {})
-                .build()
-        );
+    // Act
+    container.register(
+      registration()
+        .component(new Component<List<String>, ArrayList<String>>() {})
+        .build()
+    );
 
-        // Assert
-        final TypeProvider actual = container.getRegistry().get(expectedKey);
-        assertThat(actual).isNotNull();
-    }
+    // Assert
+    final TypeProvider actual = container.getRegistry().get(expectedKey);
+    assertThat(actual).isNotNull();
+  }
 
-    @Test
-    public void Register_NamedComponent_AddsItToRegistryWithExpectedKey() {
-        // Arrange
-        String expectedContainerKey = "java.util.List<java.lang.String>";
-        String expectedProviderKey = "java.util.List<java.lang.String>-Foo";
+  @Test
+  public void Register_NamedComponent_AddsItToRegistryWithExpectedKey() {
+    // Arrange
+    String expectedContainerKey = "java.util.List<java.lang.String>";
+    String expectedProviderKey = "java.util.List<java.lang.String>-Foo";
 
-        Container container = getNewInjectContainer();
+    Container container = getNewInjectContainer();
 
-        // Act
-        Registration r =
-            registration()
-                .component(new Component<List<String>, ArrayList<String>>() {})
-                .named("Foo")
-                .build();
+    // Act
+    Registration r =
+      registration()
+        .component(new Component<List<String>, ArrayList<String>>() {})
+        .named("Foo")
+        .build();
 
-        container.register(r);
+    container.register(r);
 
-        // Assert
-        TypeProvider<?> provider = container.getRegistry().get(expectedContainerKey);
+    // Assert
+    TypeProvider<?> provider = container.getRegistry().get(expectedContainerKey);
 
-        assertThat(provider).isNotNull();
-        assertThat(provider.getRegistry().size()).isEqualTo(1);
-        assertThat(provider.getRegistry().containsKey(expectedProviderKey));
-    }
+    assertThat(provider).isNotNull();
+    assertThat(provider.getRegistry().size()).isEqualTo(1);
+    assertThat(provider.getRegistry().containsKey(expectedProviderKey));
+  }
 
-    @Test(expected = RuntimeException.class)
-    public void Register_MultipleComponentsOfSameBaseTypeWithoutNames_Throws() {
-        // Arrange
-        Container container = getNewInjectContainer();
+  @Test(expected = RuntimeException.class)
+  public void Register_MultipleComponentsOfSameBaseTypeWithoutNames_Throws() {
+    // Arrange
+    Container container = getNewInjectContainer();
 
-        // Act
-        container.register(
-            registration()
-                .component(new Component<Object, String>() {})
-                .build(),
-            registration()
-                .component(new Component<Object, Integer>() {})
-                .build()
-        );
-    }
+    // Act
+    container.register(
+      registration()
+        .component(new Component<Object, String>() {})
+        .build(),
+      registration()
+        .component(new Component<Object, Integer>() {})
+        .build()
+    );
+  }
 
-    @Test(expected = RuntimeException.class)
-    public void Register_MultipleComponentsOfSameBaseAndReferencedTypeWithoutName_Throws() {
-        // Arrange
-        Container container = getNewInjectContainer();
+  @Test(expected = RuntimeException.class)
+  public void Register_MultipleComponentsOfSameBaseAndReferencedTypeWithoutName_Throws() {
+    // Arrange
+    Container container = getNewInjectContainer();
 
-        // Act
-        container.register(
-            registration()
-                .component(new Component<Object, String>() {})
-                .build(),
-            registration()
-                .component(new Component<Object, String>() {})
-                .build()
-        );
-    }
+    // Act
+    container.register(
+      registration()
+        .component(new Component<Object, String>() {})
+        .build(),
+      registration()
+        .component(new Component<Object, String>() {})
+        .build()
+    );
+  }
 
-    @Test
-    public void Register_MultipleComponentsOfSameBaseAndReferencedTypeWithDifferingNames_RetainsBothInRegistry() {
-        // Arrange
-        Container container = getNewInjectContainer();
+  @Test
+  public void Register_MultipleComponentsOfSameBaseAndReferencedTypeWithDifferingNames_RetainsBothInRegistry() {
+    // Arrange
+    Container container = getNewInjectContainer();
 
-        // Act
-        container.register(
-            registration()
-                .component(new Component<Object, String>() {})
-                .named("foo")
-                .build(),
-            registration()
-                .component(new Component<Object, String>() {})
-                .build()
-        );
+    // Act
+    container.register(
+      registration()
+        .component(new Component<Object, String>() {})
+        .named("foo")
+        .build(),
+      registration()
+        .component(new Component<Object, String>() {})
+        .build()
+    );
 
-        // Assert
-        Map<String, TypeProvider<?>> containerRegistry = container.getRegistry();
-        assertThat(containerRegistry.size()).isEqualTo(1);
+    // Assert
+    Map<String, TypeProvider<?>> containerRegistry = container.getRegistry();
+    assertThat(containerRegistry.size()).isEqualTo(1);
 
-        TypeProvider<?> provider = containerRegistry.entrySet().iterator().next().getValue();
-        assertThat(provider.getRegistry().size()).isEqualTo(2);
+    TypeProvider<?> provider = containerRegistry.entrySet().iterator().next().getValue();
+    assertThat(provider.getRegistry().size()).isEqualTo(2);
 
-    }
+  }
 
-    private static Container getNewInjectContainer() {
-        return new InjectContainer();
-    }
+  private static Container getNewInjectContainer() {
+    return new InjectContainer();
+  }
 }

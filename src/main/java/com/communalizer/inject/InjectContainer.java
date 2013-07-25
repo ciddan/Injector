@@ -14,234 +14,232 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InjectContainer implements Container {
-    private final Map<String, TypeProvider<?>> registry = new HashMap<String, TypeProvider<?>>();
+  private final Map<String, TypeProvider<?>> registry = new HashMap<String, TypeProvider<?>>();
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public <T> void register(Registration<T, ?> registration) {
-        TypeToken<T> baseTypeToken = registration.getComponent().getBaseTypeToken();
+  @Override
+  @SuppressWarnings("unchecked")
+  public <T> void register(Registration<T, ?> registration) {
+    TypeToken<T> baseTypeToken = registration.getComponent().getBaseTypeToken();
 
-        TypeProvider<T> provider =
-            (TypeProvider<T>) registry.get(baseTypeToken.getKey());
+    TypeProvider<T> provider =
+      (TypeProvider<T>) registry.get(baseTypeToken.getKey());
 
-        if (provider != null) {
-            provider.addRegistration(registration);
-        } else {
-            TypeProvider<T> typeProvider = new TypeProvider<T>(baseTypeToken);
-            typeProvider.addRegistration(registration);
+    if (provider != null) {
+      provider.addRegistration(registration);
+    } else {
+      TypeProvider<T> typeProvider = new TypeProvider<T>(baseTypeToken);
+      typeProvider.addRegistration(registration);
 
-            registry.put(baseTypeToken.getKey(), typeProvider);
-        }
+      registry.put(baseTypeToken.getKey(), typeProvider);
+    }
+  }
+
+  @Override
+  public <T> void register(Registration<T, ?>... registrations) {
+    for (Registration<T, ?> registration : registrations) {
+      register(registration);
+    }
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public void register(RegistrationBuilder builder) {
+    register(builder.build());
+  }
+
+  @Override
+  public void register(RegistrationBuilder... builders) {
+    for (RegistrationBuilder builder : builders) {
+      register(builder);
+    }
+  }
+
+  @Override
+  public <T> T resolve(TypeToken<T> token) {
+    if (token == null) {
+      throw new IllegalArgumentException("Parameter: token cannot be null.");
     }
 
-    @Override
-    public <T> void register(Registration<T, ?>... registrations) {
-        for (Registration<T, ?> registration : registrations) {
-            register(registration);
-        }
+    return resolveImpl(token, null);
+  }
+
+  @Override
+  public <T> T resolve(TypeToken<T> token, String name) {
+    if (token == null) {
+      throw new IllegalArgumentException("Parameter: token cannot be null.");
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void register(RegistrationBuilder builder) {
-        register(builder.build());
+    if (name == null) {
+      throw new IllegalArgumentException("Parameter: name cannot be null.");
     }
 
-    @Override
-    public void register(RegistrationBuilder... builders) {
-        for (RegistrationBuilder builder : builders) {
-            register(builder);
-        }
+    return resolveImpl(token, name);
+  }
+
+  private <T> T resolveImpl(TypeToken<T> token, String name) {
+    TypeProvider typeProvider = registry.get(token.getKey());
+
+    if (typeProvider == null) {
+      throw new RuntimeException(
+        String.format(
+          "Could not find a registration matching type token: %s.",
+          token.getKey()
+        )
+      );
     }
 
-    @Override
-    public <T> T resolve(TypeToken<T> token) {
-        if (token == null) {
-            throw new IllegalArgumentException("Parameter: token cannot be null.");
-        }
+    Registration registration = typeProvider.getRegistration(token, name);
 
-        return resolveImpl(token, null);
+    switch (registration.getComponent().getComponentType()) {
+      case REFLECTION:
+        return reflectInstance(registration);
+
+      default:
+        @SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
+        T instance = (T) registration.getComponent().getOrCreateInstance();
+
+        return instance;
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  /**
+   * Attempts to create an instance of the requested {@link Registration} by reflection.
+   */
+  private <T> T reflectInstance(Registration registration) {
+    Class<T> clazz;
+    Type referencedType = registration.getComponent().getReferencedType();
+
+    if (referencedType instanceof ParameterizedType) {
+      clazz = ((Class<T>) ((ParameterizedType) referencedType).getRawType());
+    } else {
+      clazz =  (Class<T>) referencedType;
     }
 
-    @Override
-    public <T> T resolve(TypeToken<T> token, String name) {
-        if (token == null) {
-            throw new IllegalArgumentException("Parameter: token cannot be null.");
-        }
+    Paranamer paranamer = new BytecodeReadingParanamer();
 
-        if (name == null) {
-            throw new IllegalArgumentException("Parameter: name cannot be null.");
-        }
+    try {
+      Constructor<T> constructor =
+        selectGreediestMatchingConstructor(
+          clazz,
+          registration.getComponent().generateKey()
+        );
 
-        return resolveImpl(token, name);
-    }
+      Type[] dependencies = constructor.getGenericParameterTypes();
 
-    private <T> T resolveImpl(TypeToken<T> token, String name) {
-        TypeProvider typeProvider = registry.get(token.getKey());
+      if (dependencies != null && dependencies.length > 0) {
+        Object[] initArgs = new Object[dependencies.length];
 
-        if (typeProvider == null) {
-            throw new RuntimeException(
-                String.format(
-                    "Could not find a registration matching type token: %s.",
-                    token.getKey()
-                )
-            );
-        }
+        for (int i = 0; i < dependencies.length; i++) {
+          if (registration.hasExplicitDependencies()) {
+            String parameterName = paranamer.lookupParameterNames(constructor)[i];
+            ExplicitDependency dep = registration.getDependency(parameterName);
 
-        Registration registration = typeProvider.getRegistration(token, name);
+            if (dep != null) {
+              switch (dep.getProviderType()) {
+                case INSTANCE:
+                  initArgs[i] = dep.getInstance();
+                  break;
 
-        switch (registration.getComponent().getComponentType()) {
-            case REFLECTION:
-                return reflectInstance(registration);
+                case FACTORY:
+                  initArgs[i] = dep.getFactoryArtifact();
+                  break;
 
-            default:
-                @SuppressWarnings({"unchecked", "UnnecessaryLocalVariable"})
-                T instance = (T) registration.getComponent().getOrCreateInstance();
+                case TYPE_TOKEN:
+                  String depComName = dep.getDependencyComponentName();
 
-                return instance;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    /**
-     * Attempts to create an instance of the requested {@link Registration} by reflection.
-     */
-    private <T> T reflectInstance(Registration registration) {
-        Class<T> clazz;
-        Type referencedType = registration.getComponent().getReferencedType();
-
-        if (referencedType instanceof ParameterizedType) {
-            clazz = ((Class<T>) ((ParameterizedType) referencedType).getRawType());
-        } else {
-            clazz =  (Class<T>) referencedType;
-        }
-
-        Paranamer paranamer = new BytecodeReadingParanamer();
-
-        try {
-            Constructor<T> constructor =
-                selectGreediestMatchingConstructor(
-                    clazz,
-                    registration.getComponent().generateKey()
-                );
-
-            Type[] dependencies = constructor.getGenericParameterTypes();
-
-            if (dependencies != null && dependencies.length > 0) {
-                Object[] initArgs = new Object[dependencies.length];
-
-                for (int i = 0; i < dependencies.length; i++) {
-                    if (registration.hasExplicitDependencies()) {
-                        String parameterName = paranamer.lookupParameterNames(constructor)[i];
-                        ExplicitDependency dep = registration.getDependency(parameterName);
-
-                        if (dep != null) {
-                            switch (dep.getProviderType()) {
-                                case INSTANCE:
-                                    initArgs[i] = dep.getInstance();
-                                break;
-
-                                case FACTORY:
-                                    initArgs[i] = dep.getFactoryArtifact();
-                                break;
-
-                                case TYPE_TOKEN:
-                                    String depComName = dep.getDependencyComponentName();
-
-                                    if (depComName == null || depComName.equals("")) {
-                                        initArgs[i] = resolve(dep.getTypeToken());
-                                    } else {
-                                        initArgs[i] = resolve(dep.getTypeToken(), depComName);
-                                    }
-                                break;
-                            }
-
-
-                        } else {
-                            TypeToken token = TypeToken.getToken(dependencies[i]);
-                            initArgs[i] = resolve(token);
-                        }
-                    } else {
-                        TypeToken token = TypeToken.getToken(dependencies[i]);
-                        initArgs[i] = resolve(token);
-                    }
-                }
-
-                return constructor.newInstance(initArgs);
+                  if (depComName == null || depComName.equals("")) {
+                    initArgs[i] = resolve(dep.getTypeToken());
+                  } else {
+                    initArgs[i] = resolve(dep.getTypeToken(), depComName);
+                  }
+                  break;
+              }
+            } else {
+              TypeToken token = TypeToken.getToken(dependencies[i]);
+              initArgs[i] = resolve(token);
             }
-
-            return constructor.newInstance();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    /**
-     * Evaluates all available constructors and selects the largest satisfiable constructor
-     */
-    private <T> Constructor<T> selectGreediestMatchingConstructor(Class<T> type, String componentKey) {
-        Enumerable<Constructor<T>> constructors =
-            Enumerable.create((Constructor<T>[]) type.getConstructors())
-                .orderBy(new Func1<Constructor<T>, Comparable>() {
-                    @Override
-                    public Comparable apply(Constructor<T> tConstructor) {
-                        return tConstructor.getTypeParameters().length;
-                    }
-                })
-                .reverse();
-
-        for (Constructor<T> constructor : constructors) {
-            if (isSatisfiable(constructor)) {
-                return constructor;
-            }
+          } else {
+            TypeToken token = TypeToken.getToken(dependencies[i]);
+            initArgs[i] = resolve(token);
+          }
         }
 
-        // If we get here, no constructor has been deemed satisfiable.
-        // The component cannot be resolved.
-        StringBuilder builder = new StringBuilder();
-        builder.append("Component '");
-        builder.append(componentKey);
-        builder.append("' has unregistered dependencies [");
+        return constructor.newInstance(initArgs);
+      }
 
-        Constructor<T> ctor = constructors.first();
-        Type[] dependencies = ctor.getGenericParameterTypes();
+      return constructor.newInstance();
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
 
-        for (Type dependency : dependencies) {
-            TypeToken token = TypeToken.getToken(dependency);
-            if (!registry.containsKey(token.getKey())) {
-                builder.append("'").append(token.getKey()).append("'").append(", ");
-            }
-        }
+  @SuppressWarnings("unchecked")
+  /**
+   * Evaluates all available constructors and selects the largest satisfiable constructor
+   */
+  private <T> Constructor<T> selectGreediestMatchingConstructor(Class<T> type, String componentKey) {
+    Enumerable<Constructor<T>> constructors =
+      Enumerable.create((Constructor<T>[]) type.getConstructors())
+        .orderBy(new Func1<Constructor<T>, Comparable>() {
+          @Override
+          public Comparable apply(Constructor<T> tConstructor) {
+            return tConstructor.getTypeParameters().length;
+          }
+        })
+        .reverse();
 
-        builder.append("]. Cannot resolve.");
-
-        throw new RuntimeException(builder.toString().replace(", ]", "]"));
+    for (Constructor<T> constructor : constructors) {
+      if (isSatisfiable(constructor)) {
+        return constructor;
+      }
     }
 
-    /**
-     * Evaluates a {@link Constructor} to see whether or not all necessary dependencies are registered with the
-     * container.
-     * @param constructor           The {@link Constructor} to inspect.
-     * @param <T>                   Type of the {@link Constructor}.
-     * @return                      A boolean indicating whether all dependencies can be satisfied.
-     */
-    private <T> boolean isSatisfiable(Constructor<T> constructor) {
-        Type[] dependencies = constructor.getGenericParameterTypes();
+    // If we get here, no constructor has been deemed satisfiable.
+    // The component cannot be resolved.
+    StringBuilder builder = new StringBuilder();
+    builder.append("Component '");
+    builder.append(componentKey);
+    builder.append("' has unregistered dependencies [");
 
-        for (Type dependency : dependencies) {
-            TypeToken token = TypeToken.getToken(dependency);
+    Constructor<T> ctor = constructors.first();
+    Type[] dependencies = ctor.getGenericParameterTypes();
 
-            if (!registry.containsKey(token.getKey())) {
-                return false;
-            }
-        }
-
-        return true;
+    for (Type dependency : dependencies) {
+      TypeToken token = TypeToken.getToken(dependency);
+      if (!registry.containsKey(token.getKey())) {
+        builder.append("'").append(token.getKey()).append("'").append(", ");
+      }
     }
 
-    @Override
-    public Map<String, TypeProvider<?>> getRegistry() {
-        return this.registry;
+    builder.append("]. Cannot resolve.");
+
+    throw new RuntimeException(builder.toString().replace(", ]", "]"));
+  }
+
+  /**
+   * Evaluates a {@link Constructor} to see whether or not all necessary dependencies are registered with the
+   * container.
+   * @param constructor           The {@link Constructor} to inspect.
+   * @param <T>                   Type of the {@link Constructor}.
+   * @return                      A boolean indicating whether all dependencies can be satisfied.
+   */
+  private <T> boolean isSatisfiable(Constructor<T> constructor) {
+    Type[] dependencies = constructor.getGenericParameterTypes();
+
+    for (Type dependency : dependencies) {
+      TypeToken token = TypeToken.getToken(dependency);
+
+      if (!registry.containsKey(token.getKey())) {
+        return false;
+      }
     }
+
+    return true;
+  }
+
+  @Override
+  public Map<String, TypeProvider<?>> getRegistry() {
+    return this.registry;
+  }
 }
