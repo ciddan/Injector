@@ -1,9 +1,11 @@
-package com.communalizer.inject;
+package test.com.communalizer.inject;
 
+import com.communalizer.inject.Container;
+import com.communalizer.inject.InjectContainer;
 import com.communalizer.inject.kernel.Component;
 import com.communalizer.inject.kernel.Registration;
 import com.communalizer.inject.kernel.TypeProvider;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -73,7 +75,7 @@ public class InjectContainerRegistrationFixture {
     assertThat(provider.getRegistry().containsKey(expectedProviderKey));
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test(expectedExceptions = RuntimeException.class)
   public void Register_MultipleComponentsOfSameBaseTypeWithoutNames_Throws() {
     // Arrange
     Container container = getNewInjectContainer();
@@ -89,7 +91,7 @@ public class InjectContainerRegistrationFixture {
     );
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test(expectedExceptions = RuntimeException.class)
   public void Register_MultipleComponentsOfSameBaseAndReferencedTypeWithoutName_Throws() {
     // Arrange
     Container container = getNewInjectContainer();
@@ -111,7 +113,7 @@ public class InjectContainerRegistrationFixture {
     Container container = getNewInjectContainer();
 
     // Act
-    container.register(
+    container.<Object>register(
       registration()
         .component(new Component<Object, String>() {})
         .named("foo")

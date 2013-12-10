@@ -1,6 +1,10 @@
-package com.communalizer.inject.kernel;
+package test.com.communalizer.inject.kernel;
 
-import org.junit.Test;
+import com.communalizer.inject.kernel.Component;
+import com.communalizer.inject.kernel.ComponentType;
+import com.communalizer.inject.kernel.Factory;
+import com.communalizer.inject.kernel.TypeToken;
+import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,25 +12,25 @@ import java.util.List;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class ComponentFixture {
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void Component_Creation_RequiresGenericTypeInformation() {
     // Act
     new Component() {};
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void Component_WithIncompatibleTypes_Throws() {
     // Act
     new Component<String, Integer>() {};
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void Component_WithIncompatibleWrappedTypes_Throws() {
     // Act
     new Component<List<String>, ArrayList<Integer>>() {};
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void Component_WithCompatibleBaseTypesAndIncompatibleWrappedTypes_Throws() {
     // Act
     new Component<List<String>, ArrayList<Integer>>() {};
@@ -73,7 +77,7 @@ public class ComponentFixture {
     assertThat(component.getExplicitInstance()).isSameAs(instance);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void Component_CreatedWithFactoryNotCreatingCompatibleTypes_Throws() {
     // Arrange
     Factory<Object> factory = new Factory<Object>() {
@@ -87,7 +91,7 @@ public class ComponentFixture {
     new Component<Object, String>(factory){};
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void Component_SettingFactoryAfterCreation_StillChecksFactoryType() {
     // Arrange
     Factory<Object> factory = new Factory<Object>() {

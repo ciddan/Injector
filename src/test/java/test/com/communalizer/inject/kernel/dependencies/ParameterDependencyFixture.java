@@ -1,12 +1,13 @@
-package com.communalizer.inject.kernel.dependencies;
+package test.com.communalizer.inject.kernel.dependencies;
 
 import com.communalizer.inject.kernel.Factory;
-import org.junit.Test;
+import com.communalizer.inject.kernel.dependencies.ParameterDependency;
+import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 
 public class ParameterDependencyFixture {
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void ParameterDependency_WithNullPropertyName_Throws() {
     new ParameterDependency<Class>(null, String.class);
   }

@@ -1,8 +1,10 @@
-package com.communalizer.inject.kernel.dependencies;
+package test.com.communalizer.inject.kernel.dependencies;
 
 import com.communalizer.inject.kernel.Factory;
 import com.communalizer.inject.kernel.TypeToken;
-import org.junit.Test;
+import com.communalizer.inject.kernel.dependencies.DependencyProviderType;
+import com.communalizer.inject.kernel.dependencies.ParameterDependency;
+import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 

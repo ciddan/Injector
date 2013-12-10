@@ -1,8 +1,9 @@
-package com.communalizer.inject.kernel.dependencies;
+package test.com.communalizer.inject.kernel.dependencies;
 
 import com.communalizer.inject.kernel.Factory;
 import com.communalizer.inject.kernel.TypeToken;
-import org.junit.Test;
+import com.communalizer.inject.kernel.dependencies.TypeDependency;
+import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class TypeDependencyFixture {
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void TypeDependency_WithNullTypeToken_Throws() {
     new TypeDependency<Class>(null, String.class);
   }

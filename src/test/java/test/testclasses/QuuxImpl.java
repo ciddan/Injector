@@ -1,4 +1,4 @@
-package testclasses;
+package test.testclasses;
 
 public class QuuxImpl implements Quux {
   private final Foo foo1;

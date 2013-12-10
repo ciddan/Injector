@@ -1,9 +1,13 @@
-package com.communalizer.inject.kernel;
+package test.com.communalizer.inject.kernel;
 
+import com.communalizer.inject.kernel.Component;
+import com.communalizer.inject.kernel.Factory;
+import com.communalizer.inject.kernel.Registration;
+import com.communalizer.inject.kernel.TypeToken;
 import com.communalizer.inject.kernel.dependencies.ExplicitDependency;
 import com.communalizer.inject.kernel.dependencies.ParameterDependency;
 import com.communalizer.inject.kernel.dependencies.TypeDependency;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +47,7 @@ public class RegistrationBuilderFixture {
     assertThat(reg.getKey()).isEqualTo(expectedKey);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void RegistrationBuilder_BuildWithComponentAndFactory_DoesTypeCheckingBetweenFactoryAndComponent() {
     // Arrange
     Component<Object, String> component = new Component<Object, String>() {};
@@ -61,7 +65,7 @@ public class RegistrationBuilderFixture {
       .build();
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void RegistrationBuilder_BuildWithComponentAndFactory_DoesTypeCheckingBetweenInstanceAndComponent() {
     // Arrange
     Component<Object, String> component = new Component<Object, String>() {};
@@ -74,7 +78,7 @@ public class RegistrationBuilderFixture {
       .build();
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void RegistrationBuilder_BuildWithComponentAndFactory_DoesGenericTypeCheckingBetweenFactoryAndComponent() {
     // Arrange
     Component<List<Object>, ArrayList<String>> component = new Component<List<Object>, ArrayList<String>>() {};

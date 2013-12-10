@@ -1,10 +1,12 @@
-package com.communalizer.inject;
+package test.com.communalizer.inject;
 
+import com.communalizer.inject.Container;
+import com.communalizer.inject.InjectContainer;
 import com.communalizer.inject.kernel.Component;
 import com.communalizer.inject.kernel.Factory;
 import com.communalizer.inject.kernel.TypeToken;
-import org.junit.Test;
-import testclasses.*;
+import org.testng.annotations.Test;
+import test.testclasses.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +15,7 @@ import static com.communalizer.inject.kernel.RegistrationBuilder.registration;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class InjectContainerResolutionFixture {
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void Resolve_WithNullResolutionToken_Throws() {
     // Arrange
     Container container = getNewInjectContainer();
@@ -22,7 +24,7 @@ public class InjectContainerResolutionFixture {
     container.resolve(null);
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test(expectedExceptions = RuntimeException.class)
   public void Resolve_TypeThatIsNotRegistered_Throws() {
     // Arrange
     Container container = getNewInjectContainer();
@@ -243,7 +245,7 @@ public class InjectContainerResolutionFixture {
       assertThat(e.getMessage()).isEqualTo(
         String.format(
           "java.lang.RuntimeException: Component '%s' has unregistered dependencies ['%s', '%s']. Cannot resolve.",
-          "testclasses.Quux->testclasses.QuuxImpl", "testclasses.Foo", "testclasses.Foo"
+          "test.testclasses.Quux->test.testclasses.QuuxImpl", "test.testclasses.Foo", "test.testclasses.Foo"
         )
       );
 

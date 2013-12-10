@@ -1,6 +1,7 @@
-package com.communalizer.inject.kernel;
+package test.com.communalizer.inject.kernel;
 
-import org.junit.Test;
+import com.communalizer.inject.kernel.Factory;
+import org.testng.annotations.Test;
 
 import static org.fest.assertions.Assertions.assertThat;
 

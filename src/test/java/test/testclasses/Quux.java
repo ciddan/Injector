@@ -1,4 +1,4 @@
-package testclasses;
+package test.testclasses;
 
 public interface Quux {
   Foo getFoo1();

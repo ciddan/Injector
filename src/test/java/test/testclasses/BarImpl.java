@@ -1,4 +1,4 @@
-package testclasses;
+package test.testclasses;
 
 public class BarImpl implements Bar {
   private final Foo foo;

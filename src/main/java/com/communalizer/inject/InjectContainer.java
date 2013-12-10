@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InjectContainer implements Container {
-  private final Map<String, TypeProvider<?>> registry = new HashMap<String, TypeProvider<?>>();
+  private final Map<String, TypeProvider<?>> registry = new HashMap<>();
 
   @Override
   @SuppressWarnings("unchecked")
@@ -27,7 +27,7 @@ public class InjectContainer implements Container {
     if (provider != null) {
       provider.addRegistration(registration);
     } else {
-      TypeProvider<T> typeProvider = new TypeProvider<T>(baseTypeToken);
+      TypeProvider<T> typeProvider = new TypeProvider<>(baseTypeToken);
       typeProvider.addRegistration(registration);
 
       registry.put(baseTypeToken.getKey(), typeProvider);
@@ -88,6 +88,7 @@ public class InjectContainer implements Container {
       );
     }
 
+    @SuppressWarnings("unchecked")
     Registration registration = typeProvider.getRegistration(token, name);
 
     switch (registration.getComponent().getComponentType()) {

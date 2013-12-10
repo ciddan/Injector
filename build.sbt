@@ -1,17 +1,24 @@
+import de.johoop.testngplugin.TestNGPlugin._
 import de.johoop.jacoco4sbt._
 import JacocoPlugin._
 
 name := "Injector"
 
-version := "0.1-SNAPSHOT"
+version := "0.1.0"
+
+organization := "com.communalizer"
 
 javacOptions += "-g"
 
-scalaVersion := "2.9.1"
+scalaVersion := "2.10.2"
 
 autoScalaLibrary := false
 
-seq(jacoco.settings : _*)
+jacoco.settings
+
+testNGSettings
+
+testNGSuites := Seq("src/test/resources/testng.xml")
 
 resolvers ++= Seq(
 	"Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots",
@@ -20,7 +27,15 @@ resolvers ++= Seq(
 
 libraryDependencies ++= Seq(
     "org.mockito"           %       "mockito-all"                   %   "1.9.0"     %       "test",
-    "junit"                 %       "junit"                         %   "4.8.1"     %       "test",
-    "org.fluentlenium"      %       "fluentlenium-festassert"       %   "0.5.6"     %       "test",
-    "com.novocode"          %       "junit-interface"               %   "0.8"       %       "test->default"
+    "org.testng"            %       "testng"                        %   "6.8.5"     %       "test",
+    "org.fluentlenium"      %       "fluentlenium-festassert"       %   "0.5.6"     %       "test"
 )
+
+libraryDependencies ++= Seq(
+  "org.core4j" % "core4j" % "0.6",
+  "com.thoughtworks.paranamer" % "paranamer" % "2.6"
+)
+
+jacoco.reportFormats in jacoco.Config := Seq(XMLReport("utf-8"), HTMLReport("utf-8"))
+
+testOptions += Tests.Argument(TestFrameworks.JUnit, "-v")

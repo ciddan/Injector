@@ -1,7 +1,10 @@
-package com.communalizer.inject.kernel;
+package test.com.communalizer.inject.kernel;
 
+import com.communalizer.inject.kernel.Component;
+import com.communalizer.inject.kernel.Factory;
+import com.communalizer.inject.kernel.Registration;
 import com.communalizer.inject.kernel.dependencies.ParameterDependency;
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +12,7 @@ import java.util.List;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class RegistrationFixture {
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void Registration_ConstructedWithNullComponent_Throws() {
     // Act
     new Registration<Object, String>(null);
@@ -156,7 +159,7 @@ public class RegistrationFixture {
     assertThat(registration.getDependency(anyPropertyName)).isSameAs(parameterDependency);
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void Registration_WithIncompatibleComponentFactoryRawTypes_Throws() {
     // Arrange
     Component<Object, String> component = new Component<Object, String>() {};

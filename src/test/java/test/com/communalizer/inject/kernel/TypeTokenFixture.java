@@ -1,7 +1,8 @@
-package com.communalizer.inject.kernel;
+package test.com.communalizer.inject.kernel;
 
-import org.junit.Test;
-import testclasses.BazImpl;
+import com.communalizer.inject.kernel.TypeToken;
+import org.testng.annotations.Test;
+import test.testclasses.BazImpl;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
@@ -10,7 +11,7 @@ import java.util.List;
 import static org.fest.assertions.Assertions.assertThat;
 
 public class TypeTokenFixture {
-  @Test(expected = IllegalArgumentException.class)
+  @Test(expectedExceptions = IllegalArgumentException.class)
   public void TypeToken_ConstructedAsRawType_Throws() {
     // Act
     new TypeToken() {};

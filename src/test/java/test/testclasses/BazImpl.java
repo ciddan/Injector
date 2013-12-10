@@ -1,4 +1,4 @@
-package testclasses;
+package test.testclasses;
 
 import java.util.List;
 

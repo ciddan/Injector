@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RegistrationBuilder {
-  private List<ExplicitDependency> dependencies = new ArrayList<ExplicitDependency>();
+  private List<ExplicitDependency> dependencies = new ArrayList<>();
   private Component component;
   private Factory factory;
   private Object instance;
@@ -43,37 +43,37 @@ public class RegistrationBuilder {
   }
 
   public <T> RegistrationBuilder dependsOn(String parameterName, T instance) {
-    this.dependencies.add(new ParameterDependency<T>(parameterName, instance));
+    this.dependencies.add(new ParameterDependency<>(parameterName, instance));
 
     return this;
   }
 
   public <T> RegistrationBuilder dependsOn(String parameterName, Factory<T> factory) {
-    this.dependencies.add(new ParameterDependency<T>(parameterName, factory));
+    this.dependencies.add(new ParameterDependency<>(parameterName, factory));
 
     return this;
   }
 
   public <T> RegistrationBuilder dependsOn(String parameterName, TypeToken<T> token) {
-    this.dependencies.add(new ParameterDependency<T>(parameterName, token));
+    this.dependencies.add(new ParameterDependency<>(parameterName, token));
 
     return this;
   }
 
   public <T> RegistrationBuilder dependsOn(String parameterName, TypeToken<T> token, String componentName) {
-    this.dependencies.add(new ParameterDependency<T>(parameterName, token, componentName));
+    this.dependencies.add(new ParameterDependency<>(parameterName, token, componentName));
 
     return this;
   }
 
   public <T> RegistrationBuilder dependsOn(TypeToken<T> typeToken, T instance) {
-    this.dependencies.add(new TypeDependency<T>(typeToken,  instance));
+    this.dependencies.add(new TypeDependency<>(typeToken,  instance));
 
     return this;
   }
 
   public <T> RegistrationBuilder dependsOn(TypeToken<T> typeToken, Factory<T> factory) {
-    this.dependencies.add(new TypeDependency<T>(typeToken,  factory));
+    this.dependencies.add(new TypeDependency<>(typeToken,  factory));
 
     return this;
   }
